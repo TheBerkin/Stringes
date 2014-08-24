@@ -318,7 +318,12 @@ namespace Stringes
             return Substringe(0, b);
         }
 
-        public IEnumerable<Stringe> Split(char[] separators, StringSplitOptions options = StringSplitOptions.None)
+        public IEnumerable<Stringe> Split(params char[] separators)
+        {
+            return Split(separators, StringSplitOptions.None);
+        }
+
+        public IEnumerable<Stringe> Split(char[] separators, StringSplitOptions options)
         {
             int start = 0;
             for (int i = 0; i < _length; i++)
