@@ -28,31 +28,14 @@ namespace Stringes
             get { return _pos >= _stringe.Length; }
         }
 
-        public char ReadChar()
-        {
-            return _stringe[_pos++].Character;
-        }
-
         public Chare ReadChare()
         {
             return _stringe[_pos++];
         }
 
-        public int PeekChar()
-        {
-            return EndOfStringe ? -1 : _stringe[_pos].Character;
-        }
-
         public Chare PeekChare()
         {
             return EndOfStringe ? null : _stringe[_pos];
-        }
-
-        public string ReadString(int length)
-        {
-            int p = _pos;
-            _pos += length;
-            return _stringe.Substringe(p, length).Value;
         }
 
         public Stringe ReadStringe(int length)
@@ -64,7 +47,7 @@ namespace Stringes
 
         public bool Eat(char value)
         {
-            if (PeekChar() != value) return false;
+            if (PeekChare() != value) return false;
             _pos++;
             return true;
         }
@@ -86,6 +69,20 @@ namespace Stringes
             return true;
         }
 
+        public bool Eat(Regex regex, out Stringe result)
+        {
+            if (regex == null) throw new ArgumentNullException("regex");
+            result = null;
+            var match = regex.Match(_stringe.Value, _pos);
+            if (!match.Success || match.Index != _pos) return false;
+            result = _stringe.Substringe(_pos, match.Length);
+            _pos += match.Length;
+            return true;
+        }
+
+        /// <summary>
+        /// The current zero-based position of the reader.
+        /// </summary>
         public int Position
         {
             get { return _pos; }
@@ -99,6 +96,9 @@ namespace Stringes
             }
         }
 
+        /// <summary>
+        /// The total length, in characters, of the stringe being read.
+        /// </summary>
         public int Length
         {
             get { return _stringe.Length; }
