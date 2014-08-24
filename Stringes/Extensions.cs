@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Stringes
 {
@@ -12,6 +13,16 @@ namespace Stringes
         public static Stringe ToStringe(this object value)
         {
             return new Stringe(value.ToString());
+        }
+
+        public static bool IsMatch(this Regex regex, Stringe value, int startat = 0)
+        {
+            return regex.IsMatch(value.Value, startat);
+        }
+
+        public static Match Match(this Regex regex, Stringe value, int startat = 0)
+        {
+            return regex.Match(value.Value, startat);
         }
     }
 }

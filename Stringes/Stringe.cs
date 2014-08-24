@@ -370,6 +370,10 @@ namespace Stringes
             return stringe._stref.String.Substring(stringe._offset, stringe._length);
         }        
 
+        /// <summary>
+        /// Returns the string value of the stringe.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return _stref.String.Substring(_offset, _length);
@@ -405,6 +409,10 @@ namespace Stringes
             }
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through the characteres in the stringe.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<Chare> GetEnumerator()
         {
             return _Chares().GetEnumerator();
