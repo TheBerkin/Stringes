@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Stringes
@@ -136,7 +137,7 @@ namespace Stringes
                     _line++;
                     _column = 1;
                 }
-                else
+                else if (_stref.Bases[i]) // Advance column only for non-combining characters
                 {
                     _column++;
                 }
@@ -376,11 +377,18 @@ namespace Stringes
         {
             public readonly string String;
             public readonly Chare[] Chares;
+            public readonly bool[] Bases;
 
             public Stref(string str)
             {
                 String = str;
                 Chares = new Chare[str.Length];
+                Bases = new bool[str.Length];
+                var elems = StringInfo.GetTextElementEnumerator(str);
+                while (elems.MoveNext())
+                {
+                    Bases[elems.ElementIndex] = true;
+                }
             }
         }
 
