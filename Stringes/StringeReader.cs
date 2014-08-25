@@ -119,7 +119,7 @@ namespace Stringes
             }
         }
 
-        public Token<T> EatToken<T>(LexerRules<T> rules)
+        public Token<T> ReadToken<T>(LexerRules<T> rules)
         {
             if (EndOfStringe)
             {

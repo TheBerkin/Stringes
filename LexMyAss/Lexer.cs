@@ -44,7 +44,7 @@ namespace LexMyAss
             while (!reader.EndOfStringe)
             {
                 reader.SkipWhiteSpace();
-                yield return reader.EatToken(Rules);
+                yield return reader.ReadToken(Rules);
             }
         }
     }
