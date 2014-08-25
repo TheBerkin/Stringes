@@ -21,13 +21,17 @@ namespace LexMyAss
                 {"*", TokenType.Asterisk},
                 {"(", TokenType.LeftParen},
                 {")", TokenType.RightParen},
-                {"=", TokenType.Equals},
+                {"{", TokenType.LeftBrace},
+                {"}", TokenType.RightBrace},
+                {"=", TokenType.Assign},
                 {"++", TokenType.Increment},
                 {"--", TokenType.Decrement},
+                {";", TokenType.Semicolon},
                 {"%", TokenType.Modulo},
                 {"^", TokenType.Caret},
                 {new Regex(@"-?\d+(\.\d+)?"), TokenType.Number},
-                {new Regex(@"[a-zA-Z_][a-zA-Z\d_]*"), TokenType.Identifier}
+                {new Regex(@"[a-zA-Z_][a-zA-Z\d_]*"), TokenType.Identifier, 2},
+                {new Regex(@"""(([\r\n^""]|.|[^\\]"")*?[^\\])?""", RegexOptions.ExplicitCapture), TokenType.String}
             };
         }
 
@@ -57,7 +61,7 @@ namespace LexMyAss
         Plus,
         Increment,
         Decrement,
-        Equals,
+        Assign,
         Minus,
         Slash,
         Asterisk,
@@ -65,7 +69,11 @@ namespace LexMyAss
         Caret,
         LeftParen,
         RightParen,
+        LeftBrace,
+        RightBrace,
+        Semicolon,
         Identifier,
-        Number
+        Number,
+        String
     }
 }

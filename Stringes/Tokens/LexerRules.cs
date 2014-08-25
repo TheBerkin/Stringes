@@ -11,16 +11,18 @@ namespace Stringes.Tokens
     /// <typeparam name="T">The identifier type to use in tokens created from the context.</typeparam>
     public sealed class LexerRules<T> : IEnumerable<Tuple<string, T>>
     {
+        private const int DefaultPriority = 1;
+
         private readonly HashSet<char> _punctuation;
         private List<Tuple<string, T>> _list;
-        private readonly List<Tuple<Regex, RuleMatchValueGenerator<T>>> _regexes; 
+        private List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> _regexes; 
         private bool _sorted;
 
         public LexerRules()
         {
             _punctuation = new HashSet<char>();
             _list = new List<Tuple<string, T>>(8);
-            _regexes = new List<Tuple<Regex, RuleMatchValueGenerator<T>>>(8);
+            _regexes = new List<Tuple<Regex, RuleMatchValueGenerator<T>, int>>(8);
             _sorted = false;
         }
 
@@ -42,11 +44,12 @@ namespace Stringes.Tokens
         /// </summary>
         /// <param name="regex">The regex to test for.</param>
         /// <param name="value">The token identifier to associate with the symbol.</param>
-        public void Add(Regex regex, T value)
+        /// <param name="priority">The priority of the rule. Higher values are checked first.</param>
+        public void Add(Regex regex, T value, int priority = DefaultPriority)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add entries after context has been used.");
             if (regex == null) throw new ArgumentNullException("regex");
-            if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(value)));
+            if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
         }
 
         /// <summary>
@@ -54,12 +57,13 @@ namespace Stringes.Tokens
         /// </summary>
         /// <param name="regex">The regex to test for.</param>
         /// <param name="generator">A function that generates a token identifier from the match.</param>
-        public void Add(Regex regex, Func<Match, T> generator)
+        /// <param name="priority">The priority of the rule. Higher values are checked first.</param>
+        public void Add(Regex regex, Func<Match, T> generator, int priority = DefaultPriority)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add entries after context has been used.");
             if (regex == null) throw new ArgumentNullException("regex");
             if (generator == null) throw new ArgumentNullException("generator");
-            if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(generator)));
+            if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
         }
 
         internal bool HasPunctuation(char c)
@@ -67,7 +71,7 @@ namespace Stringes.Tokens
             return _punctuation.Contains(c);
         }
 
-        internal List<Tuple<Regex, RuleMatchValueGenerator<T>>> RegexList
+        internal List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> RegexList
         {
             get { return _regexes; }
         }
@@ -76,6 +80,7 @@ namespace Stringes.Tokens
         {
             if (_sorted) return ((IEnumerable<Tuple<string, T>>)_list).GetEnumerator();
             _list = _list.OrderByDescending(t => t.Item1).ToList();
+            _regexes = _regexes.OrderByDescending(r => r.Item3).ToList();
             _sorted = true;
             return ((IEnumerable<Tuple<string, T>>)_list).GetEnumerator();
         }
