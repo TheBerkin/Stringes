@@ -9,7 +9,6 @@ namespace Stringes
     /// <summary>
     /// Describes a string or a substring in relation to its parent. Provides line number, column, offset, and other useful metadata.
     /// </summary>
-    [PermissionSet(SecurityAction.InheritanceDemand, Name="FullTrust")]
     public class Stringe : IEnumerable<Chare>
     {
         private readonly Stref _stref;

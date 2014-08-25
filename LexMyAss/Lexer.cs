@@ -35,6 +35,7 @@ namespace LexMyAss
             };
 
             Rules.AddUndefinedCaptureRule(TokenType.Misc, s => s.Trim());
+            Rules.AddEndToken(TokenType.EOF);
         }
 
         public static IEnumerable<Token<TokenType>> Lex(string inputString)
@@ -68,6 +69,7 @@ namespace LexMyAss
         Primitive,
         Number,
         String,
-        Misc
+        Misc,
+        EOF
     }
 }
