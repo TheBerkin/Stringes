@@ -1,4 +1,6 @@
-﻿namespace Stringes.Tokens
+﻿using System;
+
+namespace Stringes.Tokens
 {
     /// <summary>
     /// Represents a token that contains a custom identifier.
@@ -24,6 +26,11 @@
         public Token(T id, Stringe value) : base(value)
         {
             _id = id;
+        }
+
+        public override string ToString()
+        {
+            return String.Concat("<", _id, ": '", Value, "'>");
         }
     }
 }

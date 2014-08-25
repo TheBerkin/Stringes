@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using Stringes.Generic;
+using Stringes.Tokens;
 
 namespace Stringes
 {
