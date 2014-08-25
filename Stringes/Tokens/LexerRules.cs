@@ -46,6 +46,7 @@ namespace Stringes.Tokens
 
         public void AddUndefinedCaptureRule(T tokenId, Func<Stringe, Stringe> evalFunc)
         {
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             _undefToken = Tuple.Create(evalFunc, tokenId);
         }
 
