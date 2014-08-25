@@ -29,39 +29,22 @@ namespace LexMyAss
                 {";", TokenType.Semicolon},
                 {"%", TokenType.Modulo},
                 {"^", TokenType.Caret},
-                {   
-                    new [] 
-                    {
-                        "int", "uint", "long",
-                        "ulong", "short", "ushort",
-                        "byte", "sbyte", "float",
-                        "double", "decimal", "string"
-                    }, TokenType.Primitive, LexerConstantPriority.High
-                },
-
+                {new Regex(@"(int|uint|long|ulong|short|ushort|byte|sbyte|float|double|decimal|string)\b"), TokenType.Primitive, 3},
                 {new Regex(@"-?\d+(\.\d+)?"), TokenType.Number},
                 {new Regex(@"[a-zA-Z_][a-zA-Z\d_]*"), TokenType.Identifier, 2},
                 {new Regex(@"""(([\r\n^""]|.|[^\\]"")*?[^\\])?""", RegexOptions.ExplicitCapture), TokenType.String}
             };
+
+            //Rules.AddUndefinedCaptureRule(TokenType.Misc, s => s.Trim());
         }
 
         public static IEnumerable<Token<TokenType>> Lex(string inputString)
         {
             var reader = new StringeReader(inputString);
-            // ReSharper disable once TooWideLocalVariableScope
-            Token<TokenType> token;
             while (!reader.EndOfStringe)
             {
                 reader.SkipWhiteSpace();
-                if (reader.EndOfStringe) yield break;
-                
-                if (!reader.EatToken(Rules, out token))
-                {
-                    var c = reader.PeekChare();
-                    throw new FormatException(String.Concat("(Ln ", c.Line, ", Col ", c.Column, ") Invalid token '", c, "'"));
-                }
-
-                yield return token;
+                yield return reader.EatToken(Rules);
             }
         }
     }
@@ -85,6 +68,7 @@ namespace LexMyAss
         Identifier,
         Primitive,
         Number,
-        String
+        String,
+        Misc
     }
 }

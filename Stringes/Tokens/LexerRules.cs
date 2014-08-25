@@ -17,11 +17,15 @@ namespace Stringes.Tokens
         private readonly HashSet<char> _punctuation;
         private List<Tuple<string, T>> _listNormal;
         private List<Tuple<string, T>> _listHigh;
+        private Tuple<string, T> _endToken;
+        private Tuple<Func<Stringe, Stringe>, T> _undefToken;
         private List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> _regexes; 
         private bool _sorted;
 
         public LexerRules()
         {
+            _endToken = null;
+            _undefToken = null;
             _punctuation = new HashSet<char>();
             _listNormal = new List<Tuple<string, T>>(8);
             _listHigh = new List<Tuple<string, T>>(8);
@@ -34,18 +38,39 @@ namespace Stringes.Tokens
             return _listNormal.All(t => t.Item1 != symbol) && _listHigh.All(t => t.Item1 != symbol);
         }
 
+        public void AddEndToken(T endTokenId)
+        {
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
+            _endToken = Tuple.Create("EOF", endTokenId);
+        }
+
+        public void AddUndefinedCaptureRule(T tokenId, Func<Stringe, Stringe> evalFunc)
+        {
+            _undefToken = Tuple.Create(evalFunc, tokenId);
+        }
+
+        internal Tuple<Func<Stringe, Stringe>, T> UndefinedCaptureRule
+        {
+            get { return _undefToken; }
+        }
+
+        internal Tuple<string, T> EndToken
+        {
+            get { return _endToken; }
+        }
+
         /// <summary>
         /// Adds a constant rule to the context. This will throw an InvalidOperationException if called after the context is used to create tokens.
         /// </summary>
         /// <param name="symbol">The symbol to test for.</param>
         /// <param name="value">The token identifier to associate with the symbol.</param>
         /// <param name="priority">Determines whether the symbol should be tested before any regex rules.</param>
-        public void Add(string symbol, T value, LexerConstantPriority priority = LexerConstantPriority.Normal)
+        public void Add(string symbol, T value, SymbolPriority priority = SymbolPriority.Normal)
         {
-            if (_sorted) throw new InvalidOperationException("Cannot add entries after context has been used.");
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Argument 'symbol' can neither be null nor empty.");
 
-            if (Available(symbol)) (priority == LexerConstantPriority.High ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value));
+            if (Available(symbol)) (priority == SymbolPriority.High ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value));
             _punctuation.Add(symbol[0]);
         }
 
@@ -55,15 +80,15 @@ namespace Stringes.Tokens
         /// <param name="symbols">The symbols to test for.</param>
         /// <param name="value">The token identifier to associate with the symbols.</param>
         /// <param name="priority">Determines whether the symbol should be tested before any regex rules.</param>
-        public void Add(string[] symbols, T value, LexerConstantPriority priority = LexerConstantPriority.Normal)
+        public void Add(string[] symbols, T value, SymbolPriority priority = SymbolPriority.Normal)
         {
-            if (_sorted) throw new InvalidOperationException("Cannot add entries after context has been used.");
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (symbols == null) throw new ArgumentNullException("symbols");
             if (symbols.Length == 0) throw new ArgumentException("Tried to use an empty symbol array.");
             foreach (var s in symbols)
             {
                 if (String.IsNullOrEmpty(s)) throw new ArgumentException("One or more symbols in the provided array were empty or null.");
-                if (Available(s)) (priority == LexerConstantPriority.High ? _listHigh : _listNormal).Add(Tuple.Create(s, value));
+                if (Available(s)) (priority == SymbolPriority.High ? _listHigh : _listNormal).Add(Tuple.Create(s, value));
                 _punctuation.Add(s[0]);
             }
         }
@@ -76,7 +101,7 @@ namespace Stringes.Tokens
         /// <param name="priority">The priority of the rule. Higher values are checked first.</param>
         public void Add(Regex regex, T value, int priority = DefaultPriority)
         {
-            if (_sorted) throw new InvalidOperationException("Cannot add entries after context has been used.");
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (regex == null) throw new ArgumentNullException("regex");
             if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
         }
@@ -89,7 +114,7 @@ namespace Stringes.Tokens
         /// <param name="priority">The priority of the rule. Higher values are checked first.</param>
         public void Add(Regex regex, Func<Match, T> generator, int priority = DefaultPriority)
         {
-            if (_sorted) throw new InvalidOperationException("Cannot add entries after context has been used.");
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (regex == null) throw new ArgumentNullException("regex");
             if (generator == null) throw new ArgumentNullException("generator");
             if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
@@ -141,7 +166,7 @@ namespace Stringes.Tokens
     /// <summary>
     /// Used to manipulate the order in which symbol (non-regex) rules are tested.
     /// </summary>
-    public enum LexerConstantPriority
+    public enum SymbolPriority
     {
         /// <summary>
         /// Do not affect ordering.

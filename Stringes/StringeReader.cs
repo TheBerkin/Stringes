@@ -83,6 +83,34 @@ namespace Stringes
             return true;
         }
 
+        public bool IsNext(char value)
+        {
+            return PeekChare() == value;
+        }
+
+        public bool IsNext(string value)
+        {
+            if (String.IsNullOrEmpty(value)) return false;
+            return _stringe.IndexOf(value, _pos) == _pos;
+        }
+
+        public bool IsNext(Regex regex)
+        {
+            if (regex == null) throw new ArgumentNullException("regex");
+            var match = regex.Match(_stringe.Value, _pos);
+            return match.Success && match.Index == _pos;
+        }
+
+        public bool IsNext(Regex regex, out Stringe result)
+        {
+            if (regex == null) throw new ArgumentNullException("regex");
+            result = null;
+            var match = regex.Match(_stringe.Value, _pos);
+            if (!match.Success || match.Index != _pos) return false;
+            result = _stringe.Substringe(_pos, match.Length);
+            return true;
+        }
+
         public void SkipWhiteSpace()
         {
             while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
@@ -91,50 +119,105 @@ namespace Stringes
             }
         }
 
-        public bool EatToken<T>(LexerRules<T> rules, out Token<T> token)
+        public Token<T> EatToken<T>(LexerRules<T> rules)
         {
-            token = null;
-            if (EndOfStringe) return false;
-            
-            // Check high priority symbol rules
-            foreach (var t in rules.HighSymbols.Where(t => Eat(t.Item1)))
+            if (EndOfStringe)
             {
-                token = new Token<T>(t.Item2, t.Item1);
-                return true;
+                if (rules.EndToken != null)
+                {
+                    return new Token<T>(rules.EndToken.Item2, _stringe.Substringe(_pos, 0));
+                }
+
+                throw new InvalidOperationException("Unexpected end of input.");
             }
 
-            // Check regex rules
-            if (rules.RegexList.Any())
+            // Indicates if undefined tokens should be created
+            bool captureUndef = rules.UndefinedCaptureRule != null;
+
+            // Tracks the beginning of the undefined token content
+            int u = _pos;
+
+            do
             {
-                Match longestMatch = null;
-                var id = default(T);
-                foreach (var re in rules.RegexList)
+                // If we've reached the end, return undefined token, if present.
+                if (EndOfStringe && captureUndef && u < _pos)
                 {
-                    var match = re.Item1.Match(_stringe.Value, _pos);
-                    if (match.Success && match.Index == _pos && (longestMatch == null || match.Length > longestMatch.Length))
+                    return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                }
+
+                // Check high priority symbol rules
+                foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1)))
+                {
+                    // Return undefined token if present
+                    if (captureUndef && u < _pos)
                     {
-                        longestMatch = match;
-                        id = re.Item2.GetValue(match);
+                        return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                    }
+
+                    // Return symbol token
+                    var c = _stringe.Substringe(_pos, t.Item1.Length);
+                    _pos += t.Item1.Length;
+                    return new Token<T>(t.Item2, c);
+                }
+
+                // Check regex rules
+                if (rules.RegexList.Any())
+                {
+                    Match longestMatch = null;
+                    var id = default(T);
+
+                    // Find the longest match, if any.
+                    foreach (var re in rules.RegexList)
+                    {
+                        var match = re.Item1.Match(_stringe.Value, _pos);
+                        if (match.Success && match.Index == _pos && (longestMatch == null || match.Length > longestMatch.Length))
+                        {
+                            longestMatch = match;
+                            id = re.Item2.GetValue(match);
+                        }
+                    }
+
+                    // If there was a match, generate a token.
+                    if (longestMatch != null)
+                    {
+                        // Return undefined token if present
+                        if (captureUndef && u < _pos)
+                        {
+                            return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                        }
+
+                        // Return longest match.
+                        _pos += longestMatch.Length;
+                        return new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
                     }
                 }
 
-                // If there was a match, generate a token.
-                if (longestMatch != null)
+                // Check normal priority symbol rules
+                foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1)))
                 {
-                    token = new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
-                    _pos += longestMatch.Length;
-                    return true;
+                    // Return undefined token if present
+                    if (captureUndef && u < _pos)
+                    {
+                        return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                    }
+
+                    // Return symbol token
+                    var c = _stringe.Substringe(_pos, t.Item1.Length);
+                    _pos += t.Item1.Length;
+                    return new Token<T>(t.Item2, c);
                 }
-            }
 
-            // Check normal priority symbol rules
-            foreach (var t in rules.NormalSymbols.Where(t => Eat(t.Item1)))
-            {
-                token = new Token<T>(t.Item2, t.Item1);
-                return true;
-            }
+                _pos++;
 
-            return false;
+                if(!captureUndef)
+                {
+                    var bad = _stringe.Slice(u, _pos);
+                    throw new InvalidOperationException(String.Concat("(Ln ", bad.Line, ", Col ", bad.Column, ") Invalid token '", bad, "'"));
+                }
+
+            } while (captureUndef);
+
+            throw new InvalidOperationException("This should never happen.");
         }
 
         /// <summary>
