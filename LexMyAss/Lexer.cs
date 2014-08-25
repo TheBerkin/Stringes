@@ -35,7 +35,7 @@ namespace LexMyAss
                 {new Regex(@"""(([\r\n^""]|.|[^\\]"")*?[^\\])?""", RegexOptions.ExplicitCapture), TokenType.String}
             };
 
-            //Rules.AddUndefinedCaptureRule(TokenType.Misc, s => s.Trim());
+            Rules.AddUndefinedCaptureRule(TokenType.Misc, s => s.Trim());
         }
 
         public static IEnumerable<Token<TokenType>> Lex(string inputString)
