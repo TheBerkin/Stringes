@@ -38,12 +38,21 @@ namespace Stringes.Tokens
             return _listNormal.All(t => t.Item1 != symbol) && _listHigh.All(t => t.Item1 != symbol);
         }
 
+        /// <summary>
+        /// Define a lexer rule that returns a token when the end of the input is reached.
+        /// </summary>
+        /// <param name="endTokenId">The token identifier to associate with this rule.</param>
         public void AddEndToken(T endTokenId)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             _endToken = Tuple.Create("EOF", endTokenId);
         }
 
+        /// <summary>
+        /// Define a lexer rule that captures unrecognized characters as a token.
+        /// </summary>
+        /// <param name="tokenId">The token identifier to associate with this rule.</param>
+        /// <param name="evalFunc">A function that processes the captured stringe.</param>
         public void AddUndefinedCaptureRule(T tokenId, Func<Stringe, Stringe> evalFunc)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
@@ -66,12 +75,12 @@ namespace Stringes.Tokens
         /// <param name="symbol">The symbol to test for.</param>
         /// <param name="value">The token identifier to associate with the symbol.</param>
         /// <param name="priority">Determines whether the symbol should be tested before any regex rules.</param>
-        public void Add(string symbol, T value, SymbolPriority priority = SymbolPriority.Normal)
+        public void Add(string symbol, T value, SymbolPriority priority = SymbolPriority.Last)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (String.IsNullOrEmpty(symbol)) throw new ArgumentException("Argument 'symbol' can neither be null nor empty.");
-
-            if (Available(symbol)) (priority == SymbolPriority.High ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value));
+            if (!Available(symbol)) throw new InvalidOperationException("A rule with the symbol '" + symbol + "' already exists.");
+            (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(symbol, value));
             _punctuation.Add(symbol[0]);
         }
 
@@ -81,7 +90,7 @@ namespace Stringes.Tokens
         /// <param name="symbols">The symbols to test for.</param>
         /// <param name="value">The token identifier to associate with the symbols.</param>
         /// <param name="priority">Determines whether the symbol should be tested before any regex rules.</param>
-        public void Add(string[] symbols, T value, SymbolPriority priority = SymbolPriority.Normal)
+        public void Add(string[] symbols, T value, SymbolPriority priority = SymbolPriority.Last)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (symbols == null) throw new ArgumentNullException("symbols");
@@ -89,7 +98,8 @@ namespace Stringes.Tokens
             foreach (var s in symbols)
             {
                 if (String.IsNullOrEmpty(s)) throw new ArgumentException("One or more symbols in the provided array were empty or null.");
-                if (Available(s)) (priority == SymbolPriority.High ? _listHigh : _listNormal).Add(Tuple.Create(s, value));
+                if (!Available(s)) throw new InvalidOperationException("A rule with the symbol '" + s + "' already exists.");
+                (priority == SymbolPriority.First ? _listHigh : _listNormal).Add(Tuple.Create(s, value));
                 _punctuation.Add(s[0]);
             }
         }
@@ -104,7 +114,9 @@ namespace Stringes.Tokens
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (regex == null) throw new ArgumentNullException("regex");
-            if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
+            if (_regexes.Any(re => re.Item1 == regex)) throw new InvalidOperationException("A rule with this pattern already exists.");
+            
+            _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(value), priority));
         }
 
         /// <summary>
@@ -118,7 +130,8 @@ namespace Stringes.Tokens
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             if (regex == null) throw new ArgumentNullException("regex");
             if (generator == null) throw new ArgumentNullException("generator");
-            if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
+            if (_regexes.Any(re => re.Item1 == regex)) throw new InvalidOperationException("A rule with this pattern already exists."); 
+            _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(generator), priority));
         }
 
         internal bool HasPunctuation(char c)
@@ -170,14 +183,14 @@ namespace Stringes.Tokens
     public enum SymbolPriority
     {
         /// <summary>
-        /// Do not affect ordering.
+        /// Test symbol after testing regex symbols. This is the default value for all symbols rules.
         /// </summary>
-        Normal = 0,
+        Last = 0,
 
         /// <summary>
         /// Test symbol before testing any regex rules.
         /// </summary>
-        High = 2
+        First = 1
     }
 
     internal class RuleMatchValueGenerator<T>

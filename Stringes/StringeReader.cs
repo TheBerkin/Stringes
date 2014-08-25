@@ -14,33 +14,57 @@ namespace Stringes
         private readonly Stringe _stringe;
         private int _pos;
 
+        /// <summary>
+        /// Creates a new StringeReader instance using the specified string as input.
+        /// </summary>
+        /// <param name="value">The string to use as input. This will be converted to a root-level stringe.</param>
         public StringeReader(string value)
         {
             _stringe = value.ToStringe();
             _pos = 0;
         }
 
+        /// <summary>
+        /// Creates a new StringeReader instance using the specified stringe as input.
+        /// </summary>
+        /// <param name="value">The stringe to use as input.</param>
         public StringeReader(Stringe value)
         {
             _stringe = value;
             _pos = 0;
         }
 
+        /// <summary>
+        /// Indicates whether the reader position is at the end of the input string.
+        /// </summary>
         public bool EndOfStringe
         {
             get { return _pos >= _stringe.Length; }
         }
 
+        /// <summary>
+        /// Reads a charactere from the input and advances the position by one.
+        /// </summary>
+        /// <returns></returns>
         public Chare ReadChare()
         {
             return _stringe[_pos++];
         }
 
+        /// <summary>
+        /// Returns the next charactere in the input, but does not consume it.
+        /// </summary>
+        /// <returns></returns>
         public Chare PeekChare()
         {
             return EndOfStringe ? null : _stringe[_pos];
         }
 
+        /// <summary>
+        /// Reads a stringe from the input and advances the position by the number of characters read.
+        /// </summary>
+        /// <param name="length">The number of characters to read.</param>
+        /// <returns></returns>
         public Stringe ReadStringe(int length)
         {
             int p = _pos;
@@ -48,6 +72,11 @@ namespace Stringes
             return _stringe.Substringe(p, length);
         }
 
+        /// <summary>
+        /// Indicates whether the specified character occurs at the reader's current position, and consumes it.
+        /// </summary>
+        /// <param name="value">The character to test for.</param>
+        /// <returns></returns>
         public bool Eat(char value)
         {
             if (PeekChare() != value) return false;
@@ -55,6 +84,11 @@ namespace Stringes
             return true;
         }
 
+        /// <summary>
+        /// Indicates whether the specified string occurs at the reader's current position, and consumes it.
+        /// </summary>
+        /// <param name="value">The string to test for.</param>
+        /// <returns></returns>
         public bool Eat(string value)
         {
             if (String.IsNullOrEmpty(value)) return false;
@@ -63,6 +97,11 @@ namespace Stringes
             return true;
         }
 
+        /// <summary>
+        /// Indicates whether the specified regular expression matches the input at the reader's current position. If a match is found, the reader consumes it.
+        /// </summary>
+        /// <param name="regex">The regular expression to test for.</param>
+        /// <returns></returns>
         public bool Eat(Regex regex)
         {
             if (regex == null) throw new ArgumentNullException("regex");
@@ -72,6 +111,12 @@ namespace Stringes
             return true;
         }
 
+        /// <summary>
+        /// Indicates whether the specified regular expression matches the input at the reader's current position. If a match is found, the reader consumes it and outputs the result.
+        /// </summary>
+        /// <param name="regex">The regular expression to test for.</param>
+        /// <param name="result">The stringe to output the result to.</param>
+        /// <returns></returns>
         public bool Eat(Regex regex, out Stringe result)
         {
             if (regex == null) throw new ArgumentNullException("regex");
@@ -83,17 +128,32 @@ namespace Stringes
             return true;
         }
 
+        /// <summary>
+        /// Indicates whether the specified character occurs at the reader's current position.
+        /// </summary>
+        /// <param name="value">The character to test for.</param>
+        /// <returns></returns>
         public bool IsNext(char value)
         {
             return PeekChare() == value;
         }
 
+        /// <summary>
+        /// Indicates whether the specified string occurs at the reader's current position.
+        /// </summary>
+        /// <param name="value">The string to test for.</param>
+        /// <returns></returns>
         public bool IsNext(string value)
         {
             if (String.IsNullOrEmpty(value)) return false;
             return _stringe.IndexOf(value, _pos) == _pos;
         }
 
+        /// <summary>
+        /// Indicates whether the specified regular expression matches the input at the reader's current position.
+        /// </summary>
+        /// <param name="regex">The regular expression to test for.</param>
+        /// <returns></returns>
         public bool IsNext(Regex regex)
         {
             if (regex == null) throw new ArgumentNullException("regex");
@@ -101,6 +161,12 @@ namespace Stringes
             return match.Success && match.Index == _pos;
         }
 
+        /// <summary>
+        /// Indicates whether the specified regular expression matches the input at the reader's current position, and outputs the result.
+        /// </summary>
+        /// <param name="regex">The regular expression to test for.</param>
+        /// <param name="result">The stringe to output the result to.</param>
+        /// <returns></returns>
         public bool IsNext(Regex regex, out Stringe result)
         {
             if (regex == null) throw new ArgumentNullException("regex");
@@ -111,6 +177,9 @@ namespace Stringes
             return true;
         }
 
+        /// <summary>
+        /// Advances the reader position past any immediate white space characters.
+        /// </summary>
         public void SkipWhiteSpace()
         {
             while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
@@ -119,6 +188,12 @@ namespace Stringes
             }
         }
 
+        /// <summary>
+        /// Reads the next token from the current position, then advances the position past it.
+        /// </summary>
+        /// <typeparam name="T">The token identifier type to use.</typeparam>
+        /// <param name="rules">The lexer rules to use.</param>
+        /// <returns></returns>
         public Token<T> ReadToken<T>(LexerRules<T> rules)
         {
             if (EndOfStringe)
