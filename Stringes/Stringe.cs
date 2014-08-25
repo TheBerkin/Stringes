@@ -141,11 +141,22 @@ namespace Stringes
             _line = parent._line;
             _column = parent._column;
 
-            if (relativeOffset <= 0) return; // Do nothing if the offset is the same
+            // If the offset is to the left, the line/col is already calculated. Fetch it from the Chare cache.
+            if (relativeOffset < 0)
+            {
+                _line = _stref.Chares[_offset].Line;
+                _column = _stref.Chares[_offset].Column;
+                return;
+            }
+
+            if (relativeOffset == 0) return; // Do nothing if the offset is the same
+
+            int aOffset;
 
             for (int i = 0; i < relativeOffset; i++)
             {
-                if (_stref.String[parent._offset + i] == '\n')
+                aOffset = parent._offset + i;
+                if (_stref.String[aOffset] == '\n')
                 {
                     _line++;
                     _column = 1;
@@ -154,6 +165,8 @@ namespace Stringes
                 {
                     _column++;
                 }
+                if (_stref.Chares[aOffset] == null)
+                    _stref.Chares[aOffset] = new Chare(parent, _stref.String[aOffset], aOffset, _line, _column);
             }
         }
 
@@ -237,6 +250,22 @@ namespace Stringes
         public Stringe Substringe(int offset)
         {
             return new Stringe(this, offset, Length - offset);
+        }
+
+        /// <summary>
+        /// Returns a new substringe whose left and right boundaries are expanded by the specified values.
+        /// </summary>
+        /// <param name="left">The amount, in characters, to offset the left boundary.</param>
+        /// <param name="right">The amount, in characters, to offset the right boundary.</param>
+        /// <returns></returns>
+        public Stringe Expand(int left, int right)
+        {
+            int exIndex = _offset - left;
+            if (exIndex < 0) throw new ArgumentException("Expanded offset was negative.");
+            int exLength = _length + right + left;
+            if (exLength < 0) throw new ArgumentException("Expanded length was negative.");
+            if (exIndex + exLength > _stref.String.Length) throw new ArgumentException("Expanded stringe tried to extend beyond the end of the string.");
+            return new Stringe(this, -left, exLength);
         }
 
 

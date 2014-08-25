@@ -91,15 +91,41 @@ namespace Stringes
             }
         }
 
-        public bool EatToken<T>(TokenContext<T> tokenContext, out Token<T> token)
+        public bool EatToken<T>(LexerRules<T> tokenContext, out Token<T> token)
         {
             token = null;
             if (EndOfStringe) return false;
+            
+            // Check regex rules
+            if (tokenContext.RegexList.Any())
+            {
+                Match longestMatch = null;
+                var id = default(T);
+                foreach (var re in tokenContext.RegexList)
+                {
+                    var match = re.Item1.Match(_stringe.Value, _pos);
+                    if (match.Success && match.Index == _pos && (longestMatch == null || match.Length > longestMatch.Length))
+                    {
+                        longestMatch = match;
+                        id = re.Item2.GetValue(match);
+                    }
+                }
+
+                // If there was a match, generate a token.
+                if (longestMatch != null)
+                {
+                    token = new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
+                    return true;
+                }
+            }
+
+            // Check constant rules
             foreach (var t in tokenContext.Where(t => Eat(t.Item1)))
             {
                 token = new Token<T>(t.Item2, t.Item1);
                 return true;
             }
+
             return false;
         }
 

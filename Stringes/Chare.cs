@@ -73,6 +73,15 @@ namespace Stringes
             _line = _column = 0;
         }
 
+        internal Chare(Stringe source, char c, int offset, int line, int col)
+        {
+            _src = source;
+            _character = c;
+            _offset = offset;
+            _line = line;
+            _column = col;
+        }
+
         public override string ToString()
         {
             return _character.ToString(CultureInfo.InvariantCulture);
