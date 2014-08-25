@@ -93,7 +93,7 @@ namespace Stringes
         public string Value
         {
             // Lazily evaluated.
-            get { return _substring ?? (_substring = ToString()); }
+            get { return _substring ?? (_substring = _stref.String.Substring(_offset, _length)); }
         }
 
         /// <summary>

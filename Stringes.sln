@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stringes", "Stringes\Stringes.csproj", "{0C9D057A-967E-4038-92D8-D0B0D29D53A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LexMyAss", "LexMyAss\LexMyAss.csproj", "{AFFF581E-97E4-4054-A8DD-42DCDA5154A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0C9D057A-967E-4038-92D8-D0B0D29D53A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C9D057A-967E-4038-92D8-D0B0D29D53A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C9D057A-967E-4038-92D8-D0B0D29D53A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFFF581E-97E4-4054-A8DD-42DCDA5154A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFFF581E-97E4-4054-A8DD-42DCDA5154A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFFF581E-97E4-4054-A8DD-42DCDA5154A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFFF581E-97E4-4054-A8DD-42DCDA5154A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

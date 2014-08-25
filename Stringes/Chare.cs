@@ -53,7 +53,7 @@ namespace Stringes
             if (_offset <= 0) return;
             for (int i = 0; i < _offset; i++)
             {
-                if (_src.ParentString[_offset + i] == '\n')
+                if (_src.ParentString[_offset] == '\n')
                 {
                     _line++;
                     _column = 1;
