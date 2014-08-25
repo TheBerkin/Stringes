@@ -29,6 +29,16 @@ namespace LexMyAss
                 {";", TokenType.Semicolon},
                 {"%", TokenType.Modulo},
                 {"^", TokenType.Caret},
+                {   
+                    new [] 
+                    {
+                        "int", "uint", "long",
+                        "ulong", "short", "ushort",
+                        "byte", "sbyte", "float",
+                        "double", "decimal", "string"
+                    }, TokenType.Primitive, LexerConstantPriority.High
+                },
+
                 {new Regex(@"-?\d+(\.\d+)?"), TokenType.Number},
                 {new Regex(@"[a-zA-Z_][a-zA-Z\d_]*"), TokenType.Identifier, 2},
                 {new Regex(@"""(([\r\n^""]|.|[^\\]"")*?[^\\])?""", RegexOptions.ExplicitCapture), TokenType.String}
@@ -73,6 +83,7 @@ namespace LexMyAss
         RightBrace,
         Semicolon,
         Identifier,
+        Primitive,
         Number,
         String
     }

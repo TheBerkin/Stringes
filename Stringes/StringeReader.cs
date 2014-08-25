@@ -91,17 +91,24 @@ namespace Stringes
             }
         }
 
-        public bool EatToken<T>(LexerRules<T> tokenContext, out Token<T> token)
+        public bool EatToken<T>(LexerRules<T> rules, out Token<T> token)
         {
             token = null;
             if (EndOfStringe) return false;
             
+            // Check high priority symbol rules
+            foreach (var t in rules.HighSymbols.Where(t => Eat(t.Item1)))
+            {
+                token = new Token<T>(t.Item2, t.Item1);
+                return true;
+            }
+
             // Check regex rules
-            if (tokenContext.RegexList.Any())
+            if (rules.RegexList.Any())
             {
                 Match longestMatch = null;
                 var id = default(T);
-                foreach (var re in tokenContext.RegexList)
+                foreach (var re in rules.RegexList)
                 {
                     var match = re.Item1.Match(_stringe.Value, _pos);
                     if (match.Success && match.Index == _pos && (longestMatch == null || match.Length > longestMatch.Length))
@@ -120,8 +127,8 @@ namespace Stringes
                 }
             }
 
-            // Check constant rules
-            foreach (var t in tokenContext.Where(t => Eat(t.Item1)))
+            // Check normal priority symbol rules
+            foreach (var t in rules.NormalSymbols.Where(t => Eat(t.Item1)))
             {
                 token = new Token<T>(t.Item2, t.Item1);
                 return true;
