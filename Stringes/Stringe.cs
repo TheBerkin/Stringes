@@ -253,12 +253,12 @@ namespace Stringes
         }
 
         /// <summary>
-        /// Returns a new substringe whose left and right boundaries are expanded by the specified values.
+        /// Returns a new substringe whose left and right boundaries are offset by the specified values.
         /// </summary>
-        /// <param name="left">The amount, in characters, to offset the left boundary.</param>
-        /// <param name="right">The amount, in characters, to offset the right boundary.</param>
+        /// <param name="left">The amount, in characters, to offset the left boundary to the left.</param>
+        /// <param name="right">The amount, in characters, to offset the right boundary to the right.</param>
         /// <returns></returns>
-        public Stringe Expand(int left, int right)
+        public Stringe Dilate(int left, int right)
         {
             int exIndex = _offset - left;
             if (exIndex < 0) throw new ArgumentException("Expanded offset was negative.");

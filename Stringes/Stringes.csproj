@@ -42,7 +42,7 @@
     <Compile Include="Chare.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Tokens\Token.cs" />
-    <Compile Include="Tokens\TokenContext.cs" />
+    <Compile Include="Tokens\LexerRules.cs" />
     <Compile Include="Stringe.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringeReader.cs" />
