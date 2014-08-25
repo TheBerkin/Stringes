@@ -58,6 +58,7 @@ namespace Stringes.Tokens
         {
             if (_sorted) throw new InvalidOperationException("Cannot add entries after context has been used.");
             if (regex == null) throw new ArgumentNullException("regex");
+            if (generator == null) throw new ArgumentNullException("generator");
             if (_regexes.All(re => re.Item1 != regex)) _regexes.Add(Tuple.Create(regex, new RuleMatchValueGenerator<T>(generator)));
         }
 
