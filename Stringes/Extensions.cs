@@ -24,5 +24,13 @@ namespace Stringes
         {
             return regex.Match(value.Value, startat);
         }
+
+        public static string Slice(this string value, int a, int b)
+        {
+            if (b < a) throw new ArgumentException("'b' cannot be less tha 'a'.");
+            if (b < 0 || a < 0) throw new ArgumentException("Indices cannot be negative.");
+            if (a > value.Length || b > value.Length) throw new ArgumentException("Indices must be within string boundaries.");
+            return a == b ? String.Empty : value.Substring(a, b - a);
+        }
     }
 }

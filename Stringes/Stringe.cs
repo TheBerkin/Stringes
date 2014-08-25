@@ -253,6 +253,20 @@ namespace Stringes
         }
 
         /// <summary>
+        /// Returns a substringe that contains all characters between the two specified positions in the stringe.
+        /// </summary>
+        /// <param name="a">The left side of the slice.</param>
+        /// <param name="b">The right side of the slice.</param>
+        /// <returns></returns>
+        public Stringe Slice(int a, int b)
+        {
+            if (b < a) throw new ArgumentException("'b' cannot be less tha 'a'.");
+            if (b < 0 || a < 0) throw new ArgumentException("Indices cannot be negative.");
+            if (a > _length || b > _length) throw new ArgumentException("Indices must be within stringe boundaries.");
+            return new Stringe(this, a, b - a);
+        }
+
+        /// <summary>
         /// Returns a new substringe whose left and right boundaries are offset by the specified values.
         /// </summary>
         /// <param name="left">The amount, in characters, to offset the left boundary to the left.</param>
