@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Permissions;
 
 namespace Stringes
 {
     /// <summary>
     /// Describes a string or a substring in relation to its parent. Provides line number, column, offset, and other useful metadata.
     /// </summary>
-    public sealed class Stringe : IEnumerable<Chare>
+    [PermissionSet(SecurityAction.InheritanceDemand, Name="FullTrust")]
+    public class Stringe : IEnumerable<Chare>
     {
         private readonly Stref _stref;
         private readonly int _offset;
@@ -115,6 +117,17 @@ namespace Stringes
             _line = 1;
             _column = 1;
             _substring = null;
+        }
+
+        internal Stringe(Stringe value)
+        {
+            _stref = value._stref;
+            _offset = value._offset;
+            _length = value._length;
+            _line = value._line;
+            _column = value._column;
+            _offset = value._offset;
+            _substring = value._substring;
         }
 
         private Stringe(Stringe parent, int relativeOffset, int length)

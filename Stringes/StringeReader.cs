@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
+
+using Stringes.Generic;
 
 namespace Stringes
 {
@@ -78,6 +81,26 @@ namespace Stringes
             result = _stringe.Substringe(_pos, match.Length);
             _pos += match.Length;
             return true;
+        }
+
+        public void SkipWhiteSpace()
+        {
+            while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
+            {
+                _pos++;
+            }
+        }
+
+        public bool EatToken<T>(TokenContext<T> tokenContext, out Token<T> token)
+        {
+            token = null;
+            if (EndOfStringe) return false;
+            foreach (var t in tokenContext.Where(t => Eat(t.Item1)))
+            {
+                token = new Token<T>(t.Item2, t.Item1);
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
