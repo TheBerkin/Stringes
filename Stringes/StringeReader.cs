@@ -124,7 +124,6 @@ namespace Stringes
             foreach (var t in tokenContext.Where(t => Eat(t.Item1)))
             {
                 token = new Token<T>(t.Item2, t.Item1);
-                _pos += t.Item1.Length;
                 return true;
             }
 
