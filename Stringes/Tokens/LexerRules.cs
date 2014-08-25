@@ -75,7 +75,7 @@ namespace Stringes.Tokens
         public IEnumerator<Tuple<string, T>> GetEnumerator()
         {
             if (_sorted) return ((IEnumerable<Tuple<string, T>>)_list).GetEnumerator();
-            _list = _list.OrderByDescending(t => t.Item2).ToList();
+            _list = _list.OrderByDescending(t => t.Item1).ToList();
             _sorted = true;
             return ((IEnumerable<Tuple<string, T>>)_list).GetEnumerator();
         }

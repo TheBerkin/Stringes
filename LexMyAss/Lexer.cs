@@ -13,15 +13,19 @@ namespace LexMyAss
 
         static Lexer()
         {
-            Rules = new LexerRules<TokenType>()
+            Rules = new LexerRules<TokenType>
             {
-                {"+", TokenType.Plus},
                 {"-", TokenType.Minus},
+                {"+", TokenType.Plus},
                 {"/", TokenType.Slash},
                 {"*", TokenType.Asterisk},
                 {"(", TokenType.LeftParen},
                 {")", TokenType.RightParen},
                 {"=", TokenType.Equals},
+                {"++", TokenType.Increment},
+                {"--", TokenType.Decrement},
+                {"%", TokenType.Modulo},
+                {"^", TokenType.Caret},
                 {new Regex(@"-?\d+(\.\d+)?"), TokenType.Number},
                 {new Regex(@"[a-zA-Z_][a-zA-Z\d_]*"), TokenType.Identifier}
             };
@@ -30,12 +34,13 @@ namespace LexMyAss
         public static IEnumerable<Token<TokenType>> Lex(string inputString)
         {
             var reader = new StringeReader(inputString);
-            Token<TokenType> token = null;
+            // ReSharper disable once TooWideLocalVariableScope
+            Token<TokenType> token;
             while (!reader.EndOfStringe)
             {
                 reader.SkipWhiteSpace();
                 if (reader.EndOfStringe) yield break;
-
+                
                 if (!reader.EatToken(Rules, out token))
                 {
                     var c = reader.PeekChare();
@@ -50,10 +55,14 @@ namespace LexMyAss
     public enum TokenType
     {
         Plus,
+        Increment,
+        Decrement,
         Equals,
         Minus,
         Slash,
         Asterisk,
+        Modulo,
+        Caret,
         LeftParen,
         RightParen,
         Identifier,
