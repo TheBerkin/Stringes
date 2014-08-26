@@ -235,6 +235,9 @@ namespace Stringes
                     return new Token<T>(t.Item2, c);
                 }
 
+                
+                const string tokenGroupName = "token";
+
                 // Check regex rules
                 if (rules.RegexList.Any())
                 {
@@ -261,7 +264,14 @@ namespace Stringes
                             return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
                         }
 
-                        // Return longest match.
+                        // Return longest match, narrow down to <token> group if available.
+                        var group = longestMatch.Groups[tokenGroupName];
+                        if (group.Success)
+                        {
+                            _pos = group.Index + group.Length;
+                            return new Token<T>(id, _stringe.Substringe(group.Index, group.Length));
+                        }
+
                         _pos += longestMatch.Length;
                         return new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
                     }

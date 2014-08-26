@@ -310,6 +310,11 @@ namespace Stringes
             return Substringe(a, b - a);
         }
 
+        /// <summary>
+        /// Returns the stringe with any occurrences of the specified characters stripped from the ends.
+        /// </summary>
+        /// <param name="trimChars">The characters to strip off the ends of the stringe.</param>
+        /// <returns></returns>
         public Stringe Trim(params char[] trimChars)
         {
             if (_length == 0) return this;
@@ -373,6 +378,45 @@ namespace Stringes
             return Substringe(0, b);
         }
 
+        /// <summary>
+        /// Indicates if the left side of the stringe is padded with white space.
+        /// </summary>
+        public bool LeftPadded
+        {
+            get
+            {
+                if (_offset == 0) return false;
+                for (int i = _offset - 1; i >= 0; i--)
+                {
+                    if (!Char.IsWhiteSpace(_stref.String[i])) return false;
+                    if (_stref.String[i] == '\n') return true;
+                }
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Indicates if the right side of the stringe is padded with white space.
+        /// </summary>
+        public bool RightPadded
+        {
+            get
+            {
+                if (_offset + _length == _stref.String.Length) return false;
+                for (int i = _offset + _length; i < _stref.String.Length; i++)
+                {
+                    if (!Char.IsWhiteSpace(_stref.String[i])) return false;
+                    if (_stref.String[i] == '\n') return true;
+                }
+                return true;
+            }
+        }
+
+        public IEnumerable<Stringe> Split(params string[] separators)
+        {
+            return Split(separators, StringSplitOptions.None);
+        }
+
         public IEnumerable<Stringe> Split(params char[] separators)
         {
             return Split(separators, StringSplitOptions.None);
@@ -386,6 +430,20 @@ namespace Stringes
                 if (!separators.Contains(Value[i])) continue;
                 if (options == StringSplitOptions.None || i - start > 0) yield return Substringe(start, i - start);
                 start = i + 1;
+            }
+            if (start > _length) yield break;
+            if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
+        }
+
+        public IEnumerable<Stringe> Split(string[] separators, StringSplitOptions options)
+        {
+            int start = 0;
+            for (int i = 0; i < _length; i++)
+            {
+                var hit = separators.FirstOrDefault(sep => IndexOf(sep) == i);
+                if (hit == null) continue;
+                if (options == StringSplitOptions.None || i - start > 0) yield return Substringe(start, i - start);
+                start = i + hit.Length;
             }
             if (start > _length) yield break;
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
@@ -409,6 +467,36 @@ namespace Stringes
                 {
                     if (options == StringSplitOptions.None || i - start > 0) yield return Substringe(start, i - start);
                     start = i + 1;
+                    matches++;
+                }
+                if (matches < count - 1) continue;
+                if (start > _length) yield break;
+                yield return Substringe(start, _length - start);
+                yield break;
+            }
+            if (start > _length || matches >= count) yield break;
+            if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
+        }
+
+        public IEnumerable<Stringe> Split(string[] separators, int count, StringSplitOptions options = StringSplitOptions.None)
+        {
+            if (count == 0) yield break;
+            if (count == 1)
+            {
+                yield return this;
+                yield break;
+            }
+
+            int matches = 0;
+            int start = 0;
+
+            for (int i = 0; i < _length; i++)
+            {
+                var hit = separators.FirstOrDefault(sep => IndexOf(sep, i) == i);
+                if (hit != null)
+                {
+                    if (options == StringSplitOptions.None || i - start > 0) yield return Substringe(start, i - start);
+                    start = i + hit.Length;
                     matches++;
                 }
                 if (matches < count - 1) continue;
