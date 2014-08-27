@@ -31,7 +31,7 @@ namespace Stringes.Tokens
         public override string ToString()
         {
             if (String.IsNullOrEmpty(Value)) return "<" + _id + ">";
-            return String.Concat("<", _id, ": '", Value, "'>");
+            return String.Concat("<", _id, " @ L", Line, ", C", Column, ": '", Value, "'>");
         }
     }
 }

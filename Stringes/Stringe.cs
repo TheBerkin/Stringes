@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Security.Permissions;
 
 namespace Stringes
 {
@@ -379,13 +378,20 @@ namespace Stringes
         }
 
         /// <summary>
-        /// Indicates if the left side of the stringe is padded with white space.
+        /// Indicates if the left side of the line on which the stringe exists is composed entirely of white space.
         /// </summary>
         public bool LeftPadded
         {
             get
             {
-                if (_offset == 0) return false;
+                if (_offset == 0)
+                {
+                    for (int i = 0; i < _length; i++)
+                    {
+                        if (Char.IsWhiteSpace(_stref.String[i])) return true;
+                    }
+                    return false;
+                }
                 for (int i = _offset - 1; i >= 0; i--)
                 {
                     if (!Char.IsWhiteSpace(_stref.String[i])) return false;
@@ -396,13 +402,29 @@ namespace Stringes
         }
 
         /// <summary>
-        /// Indicates if the right side of the stringe is padded with white space.
+        /// Indicates whether the line context to the right side of the stringe is composed on uninterrupted white space.
         /// </summary>
         public bool RightPadded
         {
             get
             {
-                if (_offset + _length == _stref.String.Length) return false;
+                bool found = false;
+
+                // The end of the stringe is at the end of the parent string.
+                if (_offset + _length == _stref.String.Length) 
+                {
+                    for (int i = _stref.String.Length - 1; i >= _offset; i--)
+                    {
+                        if (!Char.IsWhiteSpace(_stref.String[i]))
+                        {
+                            return found;
+                        }
+                        found = true;
+                    }
+                    return false;
+                }
+
+                // The stringe sits in the middle of one or more lines.
                 for (int i = _offset + _length; i < _stref.String.Length; i++)
                 {
                     if (!Char.IsWhiteSpace(_stref.String[i])) return false;

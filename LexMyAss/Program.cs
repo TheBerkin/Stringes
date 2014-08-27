@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+using Stringes;
+
 namespace LexMyAss
 {
     class Program
@@ -14,7 +16,9 @@ namespace LexMyAss
                 try
                 {
                     var tokens = Lexer.Lex(code);
-                    Console.WriteLine(tokens.Select(t => t.ToString()).Aggregate((c, n) => c + " " + n));
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine(tokens.Select(t => t.ToString()).Aggregate((c, n) => c + "\n" + n));
+                    Console.ResetColor();
                 }
                 catch (Exception ex)
                 {
