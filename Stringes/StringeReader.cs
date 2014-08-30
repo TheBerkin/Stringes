@@ -194,7 +194,7 @@ namespace Stringes
         /// <typeparam name="T">The token identifier type to use.</typeparam>
         /// <param name="rules">The lexer rules to use.</param>
         /// <returns></returns>
-        public Token<T> ReadToken<T>(LexerRules<T> rules)
+        public Token<T> ReadToken<T>(LexerRules<T> rules) where T : struct
         {
             if (EndOfStringe)
             {

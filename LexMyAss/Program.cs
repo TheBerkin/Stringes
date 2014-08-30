@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 
-using Stringes;
-
 namespace LexMyAss
 {
     class Program

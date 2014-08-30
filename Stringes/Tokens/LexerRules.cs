@@ -10,7 +10,7 @@ namespace Stringes.Tokens
     /// Represents a set of rules for creating tokens from a stringe.
     /// </summary>
     /// <typeparam name="T">The identifier type to use in tokens created from the context.</typeparam>
-    public sealed class LexerRules<T> : IEnumerable
+    public sealed class LexerRules<T> : IEnumerable where T : struct
     {
         private const int DefaultPriority = 1;
 
@@ -31,6 +31,20 @@ namespace Stringes.Tokens
             _listHigh = new List<Tuple<string, T>>(8);
             _regexes = new List<Tuple<Regex, RuleMatchValueGenerator<T>, int>>(8);
             _sorted = false;
+        }
+
+        /// <summary>
+        /// Returns the symbol that represents the specified identifier. If the identifier cannot be found, the method will return an empty string.
+        /// </summary>
+        /// <param name="id">The identifier to get the symbol for.</param>
+        /// <returns></returns>
+        public string GetSymbolForId(T id)
+        {
+            foreach (var rule in _listNormal.Concat(_listHigh).Where(rule => id.Equals(rule.Item2)))
+            {
+                return rule.Item1;
+            }
+            return "";
         }
 
         private bool Available(string symbol)
