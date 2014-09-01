@@ -19,9 +19,13 @@ namespace Stringes.Tokens
         private List<Tuple<string, T>> _listHigh;
         private Tuple<string, T> _endToken;
         private Tuple<Func<Stringe, Stringe>, T> _undefToken;
-        private List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> _regexes; 
+        private List<Tuple<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
+        private readonly HashSet<T> _ignore; 
         private bool _sorted;
 
+        /// <summary>
+        /// Creates a new LexerRules instance.
+        /// </summary>
         public LexerRules()
         {
             _endToken = null;
@@ -30,7 +34,16 @@ namespace Stringes.Tokens
             _listNormal = new List<Tuple<string, T>>(8);
             _listHigh = new List<Tuple<string, T>>(8);
             _regexes = new List<Tuple<Regex, RuleMatchValueGenerator<T>, int>>(8);
+            _ignore = new HashSet<T>();
             _sorted = false;
+        }
+
+        /// <summary>
+        /// A list of token identifiers that should be ignored.
+        /// </summary>
+        public HashSet<T> IgnoreRules
+        {
+            get { return _ignore; }
         }
 
         /// <summary>
