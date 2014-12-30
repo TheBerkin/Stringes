@@ -5,7 +5,7 @@ The Stringe is a wrapper for the .NET String object that provides line, column, 
 
 Stringes can be created from normal strings.
 ```cs
-var stringe = new Stringe("Hello World!");
+var stringe = new Stringe("Hello\nWorld!");
 ```
 
 You can cut them up with ease.
