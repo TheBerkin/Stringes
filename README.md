@@ -48,5 +48,7 @@ Line 2: World!
 ##Lexers
 
 The Stringes library contains all the tools you need to write a lexer. The lexer-specific classes are:
-* `Stringes.Lexer<T>`: The main lexer class, which generates tokens according to user-specified rules.
-* `Stringes.Token<T>`: The token class, which wraps the `Stringe` class, includes information identifying the token type using a user-specified type. An enum is recommended for the type parameter.
+* `Lexer<T>`: The main lexer class, which generates tokens according to user-specified rules.
+* `Token<T>`: The token class, which wraps the `Stringe` class, includes information identifying the token type using a user-specified type. An enum is recommended for the type parameter.
+
+**For an example of how to make a lexer, see the [LexerExample](https://github.com/TheBerkin/Stringes/blob/master/LexerExample/Program.cs) source!**
