@@ -13,7 +13,7 @@ Stringe stringeB = "Hello\nWorld!";
 
 ###Support for native System.String methods
 
-Stringes support the same fabulous methods that regular strings have.
+The `Stringe` class supports many of the same fabulous methods that regular strings have. I plan on eventually getting them all implemented.
 Unlike the String type, however, methods like `Stringe.Split` return an `IEnumerable<Stringe>` instead of an array. The result of this is that these methods use lazy evaluation, which can improve performance in cases where the user does not need all of the returned data.
 ```cs
 IEnumerable<Stringe> lines = stringe.Split('\n');
