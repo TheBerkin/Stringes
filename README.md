@@ -1,20 +1,40 @@
 Stringes
 ========
 
-The Stringe is a wrapper for the .NET String object that provides line, column, and offset info for substrings, relative to their parent string.
+##What is a *stringe*?!
 
-Stringes can be created from normal strings.
+The *Stringe* is a wrapper for the .NET String object that tracks line, column, offset, and other metadata for substrings.
+
+Stringes can be created from normal strings, either explicitly or implicitly.
 ```cs
-var stringe = new Stringe("Hello\nWorld!");
+Stringe stringeA = new Stringe("Hello\nWorld!");
+Stringe stringeB = "Hello\nWorld!";
 ```
 
-You can cut them up with ease.
+###Support for native System.String methods
+
+Stringes support the same fabulous methods that regular strings have.
+Unlike the String type, however, methods like `Stringe.Split` return an `IEnumerable<Stringe>` instead of an array. The result of this is that these methods use lazy evaluation, which can improve performance in cases where the user does not need all of the returned data.
 ```cs
-var lines = stringe.Split('\n');
+IEnumerable<Stringe> lines = stringe.Split('\n');
+IEnumerable<Stringe> words = stringe.Split(' ');
 ```
 
-Each *substringe* can be traced back to where it originally came from.
+###Finding the parent string from a substringe
+
+Each *substringe* can be traced back to the string it originally came from.
 ```cs
+Stringe parent = "The quick brown fox jumps over the lazy dog";
+Stringe substr = parent.Substringe(16, 3); // "fox"
+Console.WriteLine(substr.ParentString); // "The quick brown fox jumps over the lazy dog"
+```
+
+###Location tracking
+
+Substringes keep track of the line, column, and index on which they appear. This information can be easily accessed through properties. This is **especially** useful when writing lexers, so that errors in compiled code can be traced back to the exact place where the associated tokens were read.
+
+```cs
+var lines = new Stringe("Hello\nWorld!").Split('\n');
 foreach(var substringe in lines)
 {
     Console.WriteLine("Line {0}: {1}", substringe.Line, substringe);
@@ -24,3 +44,9 @@ foreach(var substringe in lines)
 Line 1: Hello
 Line 2: World!
 ```
+
+##Lexers
+
+The Stringes library contains all the tools you need to write a lexer. The lexer-specific classes are:
+* `Stringes.Lexer<T>`: The main lexer class, which generates tokens according to user-specified rules.
+* `Stringes.Token<T>`: The token class, which wraps the `Stringe` class, includes information identifying the token type using a user-specified type. An enum is recommended for the type parameter.
