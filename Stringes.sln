@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stringes", "Stringes\String
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stringes.Tests", "Stringes.Tests\Stringes.Tests.csproj", "{F67EDEBD-71BA-4506-8F64-02FA345A3D9D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LexerExample", "LexerExample\LexerExample.csproj", "{222F7975-CEDC-4B96-A601-500F52512D26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F67EDEBD-71BA-4506-8F64-02FA345A3D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F67EDEBD-71BA-4506-8F64-02FA345A3D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F67EDEBD-71BA-4506-8F64-02FA345A3D9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{222F7975-CEDC-4B96-A601-500F52512D26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{222F7975-CEDC-4B96-A601-500F52512D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{222F7975-CEDC-4B96-A601-500F52512D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{222F7975-CEDC-4B96-A601-500F52512D26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

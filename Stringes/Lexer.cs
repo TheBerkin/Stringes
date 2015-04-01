@@ -43,6 +43,12 @@ namespace Stringes
         /// </summary>
         public HashSet<T> IgnoreRules => _ignore;
 
+        public Lexer<T> Ignore(params T[] types)
+        {
+            foreach (var t in types) _ignore.Add(t);
+            return this;
+        } 
+
         /// <summary>
         /// Returns the symbol that represents the specified identifier. If the identifier cannot be found, the method will return an empty string.
         /// </summary>

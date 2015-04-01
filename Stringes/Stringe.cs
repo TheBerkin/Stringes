@@ -569,7 +569,12 @@ namespace Stringes
         public static explicit operator string(Stringe stringe)
         {
             return stringe.Value;
-        }        
+        }
+
+        public static implicit operator Stringe(string value)
+        {
+            return new Stringe(value);
+        }
 
         /// <summary>
         /// Returns the string value of the stringe.
