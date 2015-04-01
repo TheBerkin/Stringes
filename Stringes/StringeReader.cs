@@ -59,6 +59,15 @@ namespace Stringes
         }
 
         /// <summary>
+        /// Returns the next character in the input, but does not consume it. Returns -1 if no more characters can be read.
+        /// </summary>
+        /// <returns></returns>
+        public int PeekChar()
+        {
+            return EndOfStringe ? -1 : _stringe[_pos].Character;
+        }
+
+        /// <summary>
         /// Reads a stringe from the input and advances the position by the number of characters read.
         /// </summary>
         /// <param name="length">The number of characters to read.</param>
@@ -224,23 +233,27 @@ namespace Stringes
                     return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
                 }
 
-                // Check high priority symbol rules
-                foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1, t.Item3)))
+                if (rules.HasPunctuation(PeekChar()))
                 {
-                    // Return undefined token if present
-                    if (captureUndef && u < _pos)
+                    // Check high priority symbol rules
+                    foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1, t.Item3)))
                     {
-                        if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-                        return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
-                    }
+                        // Return undefined token if present
+                        if (captureUndef && u < _pos)
+                        {
+                            if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
+                            return new Token<T>(rules.UndefinedCaptureRule.Item2,
+                                rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                        }
 
-                    // Return symbol token
-                    var c = _stringe.Substringe(_pos, t.Item1.Length);
-                    _pos += t.Item1.Length;
-                    if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
-                    return new Token<T>(t.Item2, c);
+                        // Return symbol token
+                        var c = _stringe.Substringe(_pos, t.Item1.Length);
+                        _pos += t.Item1.Length;
+                        if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
+                        return new Token<T>(t.Item2, c);
+                    }
                 }
-                
+
                 const string tokenGroupName = "value";
 
                 // Check regex rules
@@ -285,21 +298,25 @@ namespace Stringes
                     }
                 }
 
-                // Check normal priority symbol rules
-                foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1, t.Item3)))
+                if (rules.HasPunctuation(PeekChar()))
                 {
-                    // Return undefined token if present
-                    if (captureUndef && u < _pos)
+                    // Check normal priority symbol rules
+                    foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1, t.Item3)))
                     {
-                        if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-                        return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
-                    }
+                        // Return undefined token if present
+                        if (captureUndef && u < _pos)
+                        {
+                            if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
+                            return new Token<T>(rules.UndefinedCaptureRule.Item2,
+                                rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+                        }
 
-                    // Return symbol token
-                    var c = _stringe.Substringe(_pos, t.Item1.Length);
-                    _pos += t.Item1.Length;
-                    if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
-                    return new Token<T>(t.Item2, c);
+                        // Return symbol token
+                        var c = _stringe.Substringe(_pos, t.Item1.Length);
+                        _pos += t.Item1.Length;
+                        if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
+                        return new Token<T>(t.Item2, c);
+                    }
                 }
 
                 _pos++;

@@ -210,6 +210,11 @@ namespace Stringes
             }
         }
 
+        internal bool HasPunctuation(int c)
+        {
+            return c != -1 && _punctuation.Contains((char)c);
+        }
+
         internal bool HasPunctuation(char c)
         {
             return _punctuation.Contains(c);
