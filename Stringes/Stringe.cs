@@ -6,7 +6,7 @@ using System.Linq;
 namespace Stringes
 {
     /// <summary>
-    /// Describes a string or a substring in relation to its parent. Provides line number, column, offset, and other useful metadata.
+    /// Represents a string or a substring in relation to its parent. Provides line number, column, offset, and other useful data.
     /// </summary>
     public class Stringe : IEnumerable<Chare>
     {
@@ -16,6 +16,9 @@ namespace Stringes
         private readonly int _line;
         private readonly int _column;
         private string _substring;
+
+        // Used to cache requested metadata so that we don't have a bunch of unused fields
+        private Dictionary<string, object> _meta = null;
 
         /// <summary>
         /// Returns an empty stringe based on the position of another stringe.
@@ -102,6 +105,11 @@ namespace Stringes
             get { return _stref.String; }
         }
 
+        private Dictionary<string, object> Meta
+        {
+            get { return _meta ?? (_meta = new Dictionary<string, object>()); }
+        }
+
         /// <summary>
         /// Creates a new stringe from the specified string.
         /// </summary>
@@ -115,6 +123,24 @@ namespace Stringes
             _line = 1;
             _column = 1;
             _substring = null;
+        }
+
+        /// <summary>
+        /// The number of times the current string occurs in the parent string.
+        /// </summary>
+        /// <returns></returns>
+        public int OccurrenceCount
+        {
+            get
+            {
+                const string name = "Occurrences";
+                object countObj;
+                if (Meta.TryGetValue(name, out countObj)) return (int)countObj;
+
+                int count = Util.GetMatchCount(_stref.String, Value);
+                Meta[name] = count;
+                return count;
+            }
         }
 
         internal Stringe(Stringe value)
@@ -339,6 +365,11 @@ namespace Stringes
             return Substringe(a, b - a);
         }
 
+        /// <summary>
+        /// Returns a copy of the stringe with the specified characters removed from the start.
+        /// </summary>
+        /// <param name="trimChars">The characters to remove.</param>
+        /// <returns></returns>
         public Stringe TrimStart(params char[] trimChars)
         {
             if (_length == 0) return this;
@@ -358,6 +389,11 @@ namespace Stringes
             return Substringe(a);
         }
 
+        /// <summary>
+        /// Returns a copy of the stringe with the specified characters removed from the end.
+        /// </summary>
+        /// <param name="trimChars">The characters to remove.</param>
+        /// <returns></returns>
         public Stringe TrimEnd(params char[] trimChars)
         {
             if (_length == 0) return this;
@@ -378,7 +414,7 @@ namespace Stringes
         }
 
         /// <summary>
-        /// Indicates if the left side of the line on which the stringe exists is composed entirely of white space.
+        /// Indicates whether the left side of the line on which the stringe exists is composed entirely of white space.
         /// </summary>
         public bool LeftPadded
         {
@@ -409,7 +445,7 @@ namespace Stringes
             get
             {
                 bool found = false;
-
+                
                 // The end of the stringe is at the end of the parent string.
                 if (_offset + _length == _stref.String.Length) 
                 {
@@ -532,7 +568,7 @@ namespace Stringes
 
         public static explicit operator string(Stringe stringe)
         {
-            return stringe._stref.String.Substring(stringe._offset, stringe._length);
+            return stringe.Value;
         }        
 
         /// <summary>
@@ -541,11 +577,11 @@ namespace Stringes
         /// <returns></returns>
         public override string ToString()
         {
-            return _stref.String.Substring(_offset, _length);
+            return Value;
         }
 
         /// <summary>
-        /// Stores a reference to a string, to prevent unnecessary copies being created.
+        /// Stores cached character data for a Stringe.
         /// </summary>
         private class Stref
         {

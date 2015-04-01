@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
-
-using Stringes.Tokens;
 
 namespace Stringes
 {
@@ -143,11 +140,12 @@ namespace Stringes
         /// Indicates whether the specified string occurs at the reader's current position.
         /// </summary>
         /// <param name="value">The string to test for.</param>
+        /// <param name="strcmp">The string comparison type to use in the test.</param>
         /// <returns></returns>
-        public bool IsNext(string value)
+        public bool IsNext(string value, StringComparison strcmp = StringComparison.InvariantCulture)
         {
             if (String.IsNullOrEmpty(value)) return false;
-            return _stringe.IndexOf(value, _pos) == _pos;
+            return _stringe.IndexOf(value, _pos, strcmp) == _pos;
         }
 
         /// <summary>
@@ -181,6 +179,7 @@ namespace Stringes
         /// <summary>
         /// Advances the reader position past any immediate white space characters.
         /// </summary>
+        
         public void SkipWhiteSpace()
         {
             while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
@@ -193,9 +192,10 @@ namespace Stringes
         /// Reads the next token from the current position, then advances the position past it.
         /// </summary>
         /// <typeparam name="T">The token identifier type to use.</typeparam>
-        /// <param name="rules">The lexer rules to use.</param>
+        /// <param name="rules">The lexer to use.</param>
         /// <returns></returns>
-        public Token<T> ReadToken<T>(LexerRules<T> rules) where T : struct
+        
+        public Token<T> ReadToken<T>(Lexer<T> rules) where T : struct
         {
             readStart:
 
@@ -225,7 +225,7 @@ namespace Stringes
                 }
 
                 // Check high priority symbol rules
-                foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1)))
+                foreach (var t in rules.HighSymbols.Where(t => IsNext(t.Item1, t.Item3)))
                 {
                     // Return undefined token if present
                     if (captureUndef && u < _pos)
@@ -240,9 +240,8 @@ namespace Stringes
                     if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
                     return new Token<T>(t.Item2, c);
                 }
-
                 
-                const string tokenGroupName = "token";
+                const string tokenGroupName = "value";
 
                 // Check regex rules
                 if (rules.RegexList.Any())
@@ -271,23 +270,23 @@ namespace Stringes
                             return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
                         }
 
-                        // Return longest match, narrow down to <token> group if available.
+                        // Return longest match, narrow down to <value> group if available.
                         var group = longestMatch.Groups[tokenGroupName];
+                        _pos += longestMatch.Length;
+
                         if (group.Success)
                         {
-                            _pos = group.Index + group.Length;
                             if (rules.IgnoreRules.Contains(id)) goto readStart;
                             return new Token<T>(id, _stringe.Substringe(group.Index, group.Length));
                         }
-
-                        _pos += longestMatch.Length;
+                        
                         if (rules.IgnoreRules.Contains(id)) goto readStart;
                         return new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
                     }
                 }
 
                 // Check normal priority symbol rules
-                foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1)))
+                foreach (var t in rules.NormalSymbols.Where(t => IsNext(t.Item1, t.Item3)))
                 {
                     // Return undefined token if present
                     if (captureUndef && u < _pos)

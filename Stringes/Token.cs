@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Stringes.Tokens
+namespace Stringes
 {
     /// <summary>
     /// Represents a token that contains a custom identifier.
@@ -13,10 +13,7 @@ namespace Stringes.Tokens
         /// <summary>
         /// The token identifier.
         /// </summary>
-        public T Identifier
-        {
-            get { return _id; }
-        }
+        public T ID => _id;
 
         public Token(T id, string value) : base(value)
         {
@@ -28,10 +25,6 @@ namespace Stringes.Tokens
             _id = id;
         }
 
-        public override string ToString()
-        {
-            if (String.IsNullOrEmpty(Value)) return "<" + _id + ">";
-            return String.Concat("<", _id, " @ L", Line, ", C", Column, ": '", Value, "'>");
-        }
+        public override string ToString() => "<\{_id} @ L \{Line}, C \{Column}\{String.IsNullOrEmpty(Value) ? String.Empty : "'\{Value}'"}";
     }
 }
