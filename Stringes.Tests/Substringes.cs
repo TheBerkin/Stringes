@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 using NUnit.Framework;
 
@@ -36,6 +32,21 @@ namespace Stringes.Tests
             Assert.AreEqual(a, streA.Value);
             Assert.AreEqual(b, streB.Value);
             Assert.AreEqual(expectedRange, streBetween.Value);
+        }
+
+        [TestCase("Get (the words) between the parentheses", "(", 4, 1, ")", 14, 1, "the words")]
+        public void BetweenText(string parent,
+            string a, int indexA, int lengthA,
+            string b, int indexB, int lengthB,
+            string expectedBetween)
+        {
+            var streParent = parent.ToStringe();
+            var streA = streParent.Substringe(indexA, lengthA);
+            var streB = streParent.Substringe(indexB, lengthB);
+            var streBetween = Stringe.Between(streA, streB);
+            Assert.AreEqual(a, streA.Value);
+            Assert.AreEqual(b, streB.Value);    
+            Assert.AreEqual(expectedBetween, streBetween.Value);
         }
     }
 }

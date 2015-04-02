@@ -41,7 +41,7 @@ namespace Stringes
         }
 
         /// <summary>
-        /// Returns a substringe comprised of all text between the two specified stringes. The stringes must both belong to the same parent string.
+        /// Returns a stringe whose endpoints are the specified stringes. The stringes must both belong to the same parent string.
         /// </summary>
         /// <param name="a">The first stringe.</param>
         /// <param name="b">The second stringe.</param>
@@ -78,7 +78,51 @@ namespace Stringes
             // B is to the left of A.
             if (b._offset + b._length <= a._offset)
             {
-                return b.Substringe(0, a._offset + a.Length - b._offset);
+                return b.Substringe(0, a._offset + a._length - b._offset);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Returns a stringe comprised of all text between the two specified stringes. Returns null if the stringes are adjacent or intersected.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static Stringe Between(Stringe a, Stringe b)
+        {
+            if (a == null) throw new ArgumentNullException("a");
+            if (b == null) throw new ArgumentNullException("b");
+            if (a._stref != b._stref)
+                throw new ArgumentException("The stringes do not belong to the same parent.");
+
+            if (a == b) return a;
+            if (a.IsSubstringeOf(b)) return b;
+            if (b.IsSubstringeOf(a)) return a;
+
+            // Right side of A intersects left side of B.
+            if (a._offset > b._offset && a._offset + a._length < b._offset + b._length)
+            {
+                return null;
+            }
+
+            // Left side of A intersects right side of B.
+            if (a._offset < b._offset + b._length && a._offset > b._offset)
+            {
+                return null;
+            }
+
+            // A is to the left of B.
+            if (a._offset + a._length <= b._offset)
+            {
+                return a.Substringe(a._length, b._offset - a._offset - a._length);
+            }
+
+            // B is to the left of A.
+            if (b._offset + b._length <= a._offset)
+            {
+                return b.Substringe(b._length, a._offset - b._offset - b._length);
             }
 
             return null;
