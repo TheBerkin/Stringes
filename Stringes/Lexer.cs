@@ -17,9 +17,11 @@ namespace Stringes
         private readonly HashSet<char> _punctuation;
         private List<_<string, T, StringComparison>> _listNormal;
         private List<_<string, T, StringComparison>> _listHigh;
+        private List<_<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
+        private List<_<Func<StringeReader, bool>, T, int>> _functions;
         private _<string, T> _endToken;
         private _<Func<Stringe, Stringe>, T> _undefToken;
-        private List<_<Regex, RuleMatchValueGenerator<T>, int>> _regexes;
+
         private readonly HashSet<T> _ignore; 
         private bool _sorted;
 
@@ -34,6 +36,7 @@ namespace Stringes
             _listNormal = new List<_<string, T, StringComparison>>(8);
             _listHigh = new List<_<string, T, StringComparison>>(8);
             _regexes = new List<_<Regex, RuleMatchValueGenerator<T>, int>>(8);
+            _functions = new List<_<Func<StringeReader, bool>, T, int>>(8);
             _ignore = new HashSet<T>();
             _sorted = false;
         }
@@ -201,6 +204,19 @@ namespace Stringes
         }
 
         /// <summary>
+        /// Adds a function rule to the context. This will throw an InvalidOperationException if called after the context is used to create tokens.
+        /// </summary>
+        /// <param name="func">The function to read the token with.</param>
+        /// <param name="value">The token identifier to associate with the function.</param>
+        /// <param name="priority">The priority of the rule. Higher values are checked first.</param>
+        public void Add(Func<StringeReader, bool> func, T value, int priority = DefaultPriority)
+        {
+            if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
+            if (func == null) throw new ArgumentNullException("func");
+            _functions.Add(Tuple.Create(func, value, priority));
+        }
+
+        /// <summary>
         /// Tokenizes the input stringe and enumerates the resulting tokens.
         /// </summary>
         /// <param name="input">The input to tokenize.</param>
@@ -225,14 +241,13 @@ namespace Stringes
             return _punctuation.Contains(c);
         }
 
-        internal List<_<Regex, RuleMatchValueGenerator<T>, int>> RegexList => _regexes;
-
         private void Sort()
         {
             if (_sorted) return;
             _listNormal = _listNormal.OrderByDescending(t => t.Item1.Length).ToList();
             _listHigh = _listHigh.OrderByDescending(t => t.Item1.Length).ToList();
             _regexes = _regexes.OrderByDescending(r => r.Item3).ToList();
+            _functions = _functions.OrderByDescending(t => t.Item2).ToList();
             _sorted = true;
         }
 
@@ -251,6 +266,24 @@ namespace Stringes
             {
                 Sort();
                 return _listHigh;
+            }
+        }
+
+        internal List<_<Regex, RuleMatchValueGenerator<T>, int>> RegexList
+        {
+            get
+            {
+                Sort();
+                return _regexes;
+            }
+        }
+
+        internal List<_<Func<StringeReader, bool>, T, int>> FunctionList
+        {
+            get
+            {
+                Sort();
+                return _functions;
             }
         }
 

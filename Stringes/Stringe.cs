@@ -131,80 +131,49 @@ namespace Stringes
         /// <summary>
         /// The offset of the stringe in the string.
         /// </summary>
-        public int Offset
-        {
-            get { return _offset; }
-        }
+        public int Offset => _offset;
 
         /// <summary>
         /// The length of the string represented by the stringe.
         /// </summary>
-        public int Length
-        {
-            get { return _length; }
-        }
+        public int Length => _length;
 
         /// <summary>
         /// The 1-based line number at which the stringe begins.
         /// </summary>
-        public int Line
-        {
-            get { return _line; }
-        }
+        public int Line => _line;
 
         /// <summary>
         /// The 1-based column at which the stringe begins.
         /// </summary>
-        public int Column
-        {
-            get { return _column; }
-        }
+        public int Column => _column;
 
         /// <summary>
         /// The index at which the stringe ends in the string.
         /// </summary>
-        public int End
-        {
-            get { return _offset + _length; }
-        }
+        public int End => _offset + _length;
 
         /// <summary>
         /// Indicates if the stringe is a substring.
         /// </summary>
-        public bool IsSubstring
-        {
-            get { return _offset > 0 || _length < _stref.String.Length; }
-        }
+        public bool IsSubstring => _offset > 0 || _length < _stref.String.Length;
 
         /// <summary>
         /// Indicates if the stringe is empty.
         /// </summary>
-        public bool IsEmpty
-        {
-            get { return _length == 0; }
-        }
+        public bool IsEmpty => _length == 0;
 
         /// <summary>
         /// The substring value represented by the stringe. If the stringe is the parent, this will provide the original string.
         /// </summary>
-        public string Value
-        {
-            // Lazily evaluated.
-            get { return _substring ?? (_substring = _stref.String.Substring(_offset, _length)); }
-        }
+        public string Value => _substring ?? (_substring = _stref.String.Substring(_offset, _length));
 
         /// <summary>
         /// Gets the original string from which the stringe was originally derived.
         /// </summary>
-        public string ParentString
-        {
-            get { return _stref.String; }
-        }
+        public string ParentString => _stref.String;
 
-        private Dictionary<string, object> Meta
-        {
-            get { return _meta ?? (_meta = new Dictionary<string, object>()); }
-        }
+        private Dictionary<string, object> Meta => _meta ?? (_meta = new Dictionary<string, object>());
 
         /// <summary>
         /// Creates a new stringe from the specified string.
@@ -230,12 +199,29 @@ namespace Stringes
             get
             {
                 const string name = "Occurrences";
-                object countObj;
-                if (Meta.TryGetValue(name, out countObj)) return (int)countObj;
+                object obj;
+                if (Meta.TryGetValue(name, out obj)) return (int)obj;
 
                 int count = Util.GetMatchCount(_stref.String, Value);
                 Meta[name] = count;
                 return count;
+            }
+        }
+
+        /// <summary>
+        /// The next index in the parent string at which the current stringe value occurs.
+        /// </summary>
+        public int NextIndex
+        {
+            get
+            {
+                const string name = "NextIndex";
+                object obj;
+                if (Meta.TryGetValue(name, out obj)) return (int)obj;
+
+                int nextIndex = _stref.String.IndexOf(Value, _offset + 1, StringComparison.InvariantCulture);
+                Meta[name] = nextIndex;
+                return nextIndex;
             }
         }
 
@@ -295,13 +281,7 @@ namespace Stringes
         /// </summary>
         /// <param name="index">The index of the charactere to retrieve.</param>
         /// <returns></returns>
-        public Chare this[int index]
-        {
-            get
-            {
-                return _stref.Chares[index] ?? (_stref.Chares[index] = new Chare(this, _stref.String[index], index + _offset));
-            }
-        }
+        public Chare this[int index] => _stref.Chares[index] ?? (_stref.Chares[index] = new Chare(this, _stref.String[index], index + _offset));
 
         /// <summary>
         /// Determines whether the current stringe is a substringe of the specified parent stringe.
@@ -713,19 +693,13 @@ namespace Stringes
         /// Converts a Stringe to its string value.
         /// </summary>
         /// <param name="stringe">The stringe to convert.</param>
-        public static explicit operator string(Stringe stringe)
-        {
-            return stringe.Value;
-        }
+        public static explicit operator string(Stringe stringe) => stringe.Value;
 
         /// <summary>
         /// Converts a string to a Stringe.
         /// </summary>
         /// <param name="value">The string to convert.</param>
-        public static implicit operator Stringe(string value)
-        {
-            return new Stringe(value);
-        }
+        public static implicit operator Stringe(string value) => new Stringe(value);
 
         /// <summary>
         /// Determines whether two stringes are equal.
@@ -769,19 +743,13 @@ namespace Stringes
         /// Returns the hash of the current stringe.
         /// </summary>
         /// <returns></returns>
-        public override int GetHashCode()
-        {
-            return Util.HashOf(_stref.String, _offset, _length);
-        }
+        public override int GetHashCode() => Util.HashOf(_stref.String, _offset, _length);
 
         /// <summary>
         /// Returns the string value of the stringe.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return Value;
-        }
+        public override string ToString() => Value;
 
         /// <summary>
         /// Stores cached character data for a Stringe.

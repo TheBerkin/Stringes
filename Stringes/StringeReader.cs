@@ -298,6 +298,22 @@ namespace Stringes
                     }
                 }
 
+                if (rules.FunctionList.Any())
+                {
+                    int origPos = _pos;
+
+                    foreach (var fn in rules.FunctionList)
+                    {
+                        if (fn.Item1(this))
+                        {
+                            if (rules.IgnoreRules.Contains(fn.Item2)) goto readStart;
+                            return new Token<T>(fn.Item2, _stringe.Slice(origPos, _pos));
+                        }
+                        // Reset for next function
+                        _pos = origPos;
+                    }
+                }
+
                 if (rules.HasPunctuation(PeekChar()))
                 {
                     // Check normal priority symbol rules

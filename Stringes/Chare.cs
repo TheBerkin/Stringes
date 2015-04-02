@@ -16,26 +16,17 @@ namespace Stringes
         /// <summary>
         /// The stringe from which the charactere was taken.
         /// </summary>
-        public Stringe Source
-        {
-            get { return _src; }
-        }
+        public Stringe Source => _src;
 
         /// <summary>
         /// The underlying character.
         /// </summary>
-        public char Character
-        {
-            get { return _character; }
-        }
+        public char Character => _character;
 
         /// <summary>
         /// The position of the charactere in the stringe.
         /// </summary>
-        public int Offset
-        {
-            get { return _offset; }
-        }
+        public int Offset => _offset;
 
         /// <summary>
         /// The line on which the charactere appears.
@@ -101,19 +92,13 @@ namespace Stringes
         /// Returns the string representation of the current charactere.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
-        {
-            return _character.ToString(CultureInfo.InvariantCulture);
-        }
+        public override string ToString() => _character.ToString(CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts a charactere to a character.
         /// </summary>
         /// <param name="chare">The charactere to convert.</param>
 
-        public static implicit operator char(Chare chare)
-        {
-            return chare._character;
-        }
+        public static implicit operator char(Chare chare) => chare._character;
     }
 }
