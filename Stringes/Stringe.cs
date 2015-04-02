@@ -41,6 +41,50 @@ namespace Stringes
         }
 
         /// <summary>
+        /// Returns a substringe comprised of all text between the two specified stringes. The stringes must both belong to the same parent string.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static Stringe Range(Stringe a, Stringe b)
+        {
+            if (a == null) throw new ArgumentNullException("a");
+            if (b == null) throw new ArgumentNullException("b");
+            if (a._stref != b._stref)
+                throw new ArgumentException("The stringes do not belong to the same parent.");
+
+            if (a == b) return a;
+            if (a.IsSubstringeOf(b)) return b;
+            if (b.IsSubstringeOf(a)) return a;
+
+            // Right side of A intersects left side of B.
+            if (a._offset > b._offset && a._offset + a._length < b._offset + b._length)
+            {
+                return a.Substringe(0, b._offset + b._length - a._offset);
+            }
+
+            // Left side of A intersects right side of B.
+            if (a._offset < b._offset + b._length && a._offset > b._offset)
+            {
+                return b.Substringe(0, a._offset + a._length - b._offset);
+            }
+
+            // A is to the left of B.
+            if (a._offset + a._length <= b._offset)
+            {
+                return a.Substringe(0, b._offset + b._length - a._offset);
+            }
+
+            // B is to the left of A.
+            if (b._offset + b._length <= a._offset)
+            {
+                return b.Substringe(0, a._offset + a.Length - b._offset);
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// The offset of the stringe in the string.
         /// </summary>
         public int Offset
@@ -205,6 +249,17 @@ namespace Stringes
             {
                 return _stref.Chares[index] ?? (_stref.Chares[index] = new Chare(this, _stref.String[index], index + _offset));
             }
+        }
+
+        /// <summary>
+        /// Determines whether the current stringe is a substringe of the specified parent stringe.
+        /// </summary>
+        /// <param name="parent">The parent stringe to compare to.</param>
+        /// <returns></returns>
+        public bool IsSubstringeOf(Stringe parent)
+        {
+            if (_stref != parent._stref) return false;
+            return _offset >= parent._offset && _offset + _length <= parent._offset + parent._length;
         }
 
         /// <summary>
@@ -470,16 +525,32 @@ namespace Stringes
             }
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(params string[] separators)
         {
             return Split(separators, StringSplitOptions.None);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(params char[] separators)
         {
             return Split(separators, StringSplitOptions.None);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(char[] separators, StringSplitOptions options)
         {
             int start = 0;
@@ -493,6 +564,12 @@ namespace Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(string[] separators, StringSplitOptions options)
         {
             int start = 0;
@@ -507,6 +584,13 @@ namespace Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="count">The maximum number of substringes to return. If the count exceeds this number, the last item will be the remainder of the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(char[] separators, int count, StringSplitOptions options = StringSplitOptions.None)
         {
             if (count == 0) yield break;
@@ -536,6 +620,13 @@ namespace Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
+        /// <summary>
+        /// Splits the stringe into multiple parts by the specified delimiters.
+        /// </summary>
+        /// <param name="separators">The delimiters by which to split the stringe.</param>
+        /// <param name="count">The maximum number of substringes to return. If the count exceeds this number, the last item will be the remainder of the stringe.</param>
+        /// <param name="options">Specifies whether empty substringes should be included in the return value.</param>
+        /// <returns></returns>
         public IEnumerable<Stringe> Split(string[] separators, int count, StringSplitOptions options = StringSplitOptions.None)
         {
             if (count == 0) yield break;
