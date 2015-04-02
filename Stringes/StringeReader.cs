@@ -35,10 +35,7 @@ namespace Stringes
         /// <summary>
         /// Indicates whether the reader position is at the end of the input string.
         /// </summary>
-        public bool EndOfStringe
-        {
-            get { return _pos >= _stringe.Length; }
-        }
+        public bool EndOfStringe => _pos >= _stringe.Length;
 
         /// <summary>
         /// Reads a charactere from the input and advances the position by one.
@@ -86,8 +83,38 @@ namespace Stringes
         /// <returns></returns>
         public bool Eat(char value)
         {
-            if (PeekChare() != value) return false;
+            if (EndOfStringe || PeekChare() != value) return false;
             _pos++;
+            return true;
+        }
+
+        public bool EatAll(char value)
+        {
+            if (PeekChare() != value) return false;
+            do
+            {
+                _pos++;
+            } while (PeekChare() == value);
+            return true;
+        }
+
+        public bool EatWhile(Func<char, bool> predicate)
+        {
+            if (EndOfStringe || !predicate(PeekChare().Character)) return false;
+            do
+            {
+                _pos++;
+            } while (!EndOfStringe && predicate(PeekChare().Character));
+            return true;
+        }
+
+        public bool EatWhile(Func<Chare, bool> predicate)
+        {
+            if (EndOfStringe || !predicate(PeekChare())) return false;
+            do
+            {
+                _pos++;
+            } while (!EndOfStringe && predicate(PeekChare()));
             return true;
         }
 
@@ -101,6 +128,18 @@ namespace Stringes
             if (String.IsNullOrEmpty(value)) return false;
             if (_stringe.IndexOf(value, _pos) != _pos) return false;
             _pos += value.Length;
+            return true;
+        }
+
+
+        public bool EatAll(string value)
+        {
+            if (String.IsNullOrEmpty(value)) return false;
+            if (_stringe.IndexOf(value, _pos) != _pos) return false;
+            do
+            {
+                _pos += value.Length;
+            } while (_stringe.IndexOf(value, _pos) == _pos);
             return true;
         }
 
@@ -189,12 +228,14 @@ namespace Stringes
         /// Advances the reader position past any immediate white space characters.
         /// </summary>
         
-        public void SkipWhiteSpace()
+        public bool SkipWhiteSpace()
         {
+            int oldPos = _pos;
             while (!EndOfStringe && Char.IsWhiteSpace(_stringe.Value[_pos]))
             {
                 _pos++;
             }
+            return _pos > oldPos;
         }
 
         /// <summary>
@@ -367,9 +408,6 @@ namespace Stringes
         /// <summary>
         /// The total length, in characters, of the stringe being read.
         /// </summary>
-        public int Length
-        {
-            get { return _stringe.Length; }
-        }
+        public int Length => _stringe.Length;
     }
 }

@@ -10,6 +10,7 @@ namespace LexerExample
         // Lexer
         private static readonly Lexer<M> lexer = new Lexer<M>
         {
+            // Constant rules
             {"+", M.Plus},
             {"-", M.Minus},
             {"*", M.Asterisk},
@@ -17,9 +18,22 @@ namespace LexerExample
             {"^", M.Caret},
             {"(", M.LeftParen},
             {")", M.RightParen},
-            {new Regex(@"-?\d+(\.\d+)?"), M.Number},
-            {new Regex(@"\s+"), M.Whitespace}
-        }.Ignore(M.Whitespace);
+
+            // Function rule
+            {
+                reader =>
+                {
+                    reader.Eat('-');
+                    if (!reader.EatWhile(Char.IsDigit)) return false;
+                    return !reader.Eat('.') || reader.EatWhile(Char.IsDigit);
+                },
+                M.Number
+            },
+
+            // Regex rule
+            {new Regex(@"\s"), M.Whitespace}
+        }
+        .Ignore(M.Whitespace);
 
         // Token types
         enum M
@@ -39,7 +53,7 @@ namespace LexerExample
         {
             Console.Title = "Stringes Lexer Example";
 
-            var origText = "2 * 3 / (5 + 1) ^ 2";
+            var origText = "20 * 3.14 / (5 + 11) ^ 2";
 
             Console.WriteLine("ORIGINAL:\n");
             Console.WriteLine(origText);

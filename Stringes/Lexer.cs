@@ -21,7 +21,6 @@ namespace Stringes
         private List<_<Func<StringeReader, bool>, T, int>> _functions;
         private _<string, T> _endToken;
         private _<Func<Stringe, Stringe>, T> _undefToken;
-
         private readonly HashSet<T> _ignore; 
         private bool _sorted;
 
@@ -96,10 +95,7 @@ namespace Stringes
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             _undefToken = Tuple.Create(evalFunc, tokenId);
         }
-
-        internal _<Func<Stringe, Stringe>, T> UndefinedCaptureRule => _undefToken;
-
-        internal _<string, T> EndToken => _endToken;
+        
 
         /// <summary>
         /// Adds a constant rule to the context. This will throw an InvalidOperationException if called after the context is used to create tokens.
@@ -250,6 +246,10 @@ namespace Stringes
             _functions = _functions.OrderByDescending(t => t.Item2).ToList();
             _sorted = true;
         }
+
+        internal _<Func<Stringe, Stringe>, T> UndefinedCaptureRule => _undefToken;
+
+        internal _<string, T> EndToken => _endToken;
 
         internal List<_<string, T, StringComparison>> NormalSymbols
         {

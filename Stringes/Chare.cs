@@ -94,11 +94,14 @@ namespace Stringes
         /// <returns></returns>
         public override string ToString() => _character.ToString(CultureInfo.InvariantCulture);
 
-        /// <summary>
-        /// Converts a charactere to a character.
-        /// </summary>
-        /// <param name="chare">The charactere to convert.</param>
+        public static bool operator ==(Chare chare, char c)
+        {
+            return chare?._character == c;
+        }
 
-        public static implicit operator char(Chare chare) => chare._character;
+        public static bool operator !=(Chare chare, char c)
+        {
+            return !(chare == c);
+        }
     }
 }
