@@ -3,7 +3,7 @@
 namespace Stringes
 {
     /// <summary>
-    /// Provides information about a character in a stringe.
+    /// Represents a charactere, which provides location information on a character taken from a stringe.
     /// </summary>
     public sealed class Chare
     {
@@ -13,21 +13,33 @@ namespace Stringes
         private int _line;
         private int _column;
 
+        /// <summary>
+        /// The stringe from which the charactere was taken.
+        /// </summary>
         public Stringe Source
         {
             get { return _src; }
         }
 
+        /// <summary>
+        /// The underlying character.
+        /// </summary>
         public char Character
         {
             get { return _character; }
         }
 
+        /// <summary>
+        /// The position of the charactere in the stringe.
+        /// </summary>
         public int Offset
         {
             get { return _offset; }
         }
 
+        /// <summary>
+        /// The line on which the charactere appears.
+        /// </summary>
         public int Line
         {
             get
@@ -37,6 +49,9 @@ namespace Stringes
             }
         }
 
+        /// <summary>
+        /// The column on which the charactere appears.
+        /// </summary>
         public int Column
         {
             get
@@ -82,10 +97,19 @@ namespace Stringes
             _column = col;
         }
 
+        /// <summary>
+        /// Returns the string representation of the current charactere.
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             return _character.ToString(CultureInfo.InvariantCulture);
         }
+
+        /// <summary>
+        /// Converts a charactere to a character.
+        /// </summary>
+        /// <param name="chare">The charactere to convert.</param>
 
         public static implicit operator char(Chare chare)
         {

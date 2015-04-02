@@ -43,6 +43,11 @@ namespace Stringes
         /// </summary>
         public HashSet<T> IgnoreRules => _ignore;
 
+        /// <summary>
+        /// Adds the specified token types to the ignore list.
+        /// </summary>
+        /// <param name="types">The token types to ignore.</param>
+        /// <returns></returns>
         public Lexer<T> Ignore(params T[] types)
         {
             foreach (var t in types) _ignore.Add(t);
@@ -249,6 +254,10 @@ namespace Stringes
             }
         }
 
+        /// <summary>
+        /// Definitely does not return the enumerator for the current instance.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator GetEnumerator()
         {
             throw new InvalidOperationException("Cannot enumerate a rule set.");

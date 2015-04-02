@@ -117,6 +117,14 @@ namespace Stringes
         }
 
         /// <summary>
+        /// The index at which the stringe ends in the string.
+        /// </summary>
+        public int End
+        {
+            get { return _offset + _length; }
+        }
+
+        /// <summary>
         /// Indicates if the stringe is a substring.
         /// </summary>
         public bool IsSubstring
@@ -657,14 +665,69 @@ namespace Stringes
             if (options == StringSplitOptions.None || _length - start > 0) yield return Substringe(start, _length - start);
         }
 
+        /// <summary>
+        /// Converts a Stringe to its string value.
+        /// </summary>
+        /// <param name="stringe">The stringe to convert.</param>
         public static explicit operator string(Stringe stringe)
         {
             return stringe.Value;
         }
 
+        /// <summary>
+        /// Converts a string to a Stringe.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
         public static implicit operator Stringe(string value)
         {
             return new Stringe(value);
+        }
+
+        /// <summary>
+        /// Determines whether two stringes are equal.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static bool operator ==(Stringe a, Stringe b)
+        {
+            if (Equals(a, null) && Equals(b, null)) return true;
+            if (Equals(a, null) || Equals(b, null)) return false;
+            return a._stref == b._stref && a.Value == b.Value;
+        }
+
+        /// <summary>
+        /// Determines whether two stringes are not equal.
+        /// </summary>
+        /// <param name="a">The first stringe.</param>
+        /// <param name="b">The second stringe.</param>
+        /// <returns></returns>
+        public static bool operator !=(Stringe a, Stringe b)
+        {
+            if (Equals(a, null) && Equals(b, null)) return false;
+            if (Equals(a, null) || Equals(b, null)) return true;
+            return a._stref != b._stref || a.Value != b.Value;
+        }
+
+        /// <summary>
+        /// Determines whether the current stringe is equal to the specified object.
+        /// </summary>
+        /// <param name="obj">The object to compare with.</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            var stre = obj as Stringe;
+            if (stre == null) return false;
+            return this == stre;
+        }
+
+        /// <summary>
+        /// Returns the hash of the current stringe.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return Util.HashOf(_stref.String, _offset, _length);
         }
 
         /// <summary>
