@@ -85,12 +85,24 @@ namespace Stringes
             _endToken = Tuple.Create("EOF", endTokenId);
         }
 
-        /// <summary>
-        /// Define a lexer rule that captures unrecognized characters as a token.
-        /// </summary>
-        /// <param name="tokenId">The token identifier to associate with this rule.</param>
-        /// <param name="evalFunc">A function that processes the captured stringe.</param>
-        public void AddUndefinedCaptureRule(T tokenId, Func<Stringe, Stringe> evalFunc)
+		/// <summary>
+		/// Define a lexer rule that returns a token when the end of the input is reached.
+		/// </summary>
+		/// <param name="endTokenId">The token identifier to associate with this rule.</param>
+		/// <param name="endTokenValue">The value string to assign to the end token.</param>
+		public void AddEndToken(T endTokenId, string endTokenValue)
+		{
+			if (endTokenValue == null) throw new ArgumentNullException("endTokenValue");
+			if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
+			_endToken = Tuple.Create(endTokenValue, endTokenId);
+		}
+
+		/// <summary>
+		/// Define a lexer rule that captures unrecognized characters as a token.
+		/// </summary>
+		/// <param name="tokenId">The token identifier to associate with this rule.</param>
+		/// <param name="evalFunc">A function that processes the captured stringe.</param>
+		public void AddUndefinedCaptureRule(T tokenId, Func<Stringe, Stringe> evalFunc)
         {
             if (_sorted) throw new InvalidOperationException("Cannot add more rules after they have been used.");
             _undefToken = Tuple.Create(evalFunc, tokenId);

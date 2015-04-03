@@ -1,6 +1,6 @@
 ﻿using System;
 
-using Stringes.Util;
+using static Stringes.Util;
 
 namespace Stringes
 {
@@ -143,7 +143,7 @@ namespace Stringes
             this.Item1 = Item1;
         }
 
-        public override string ToString() => "{Item1: \{Item1}}";
+        public override string ToString() => $"{{Item1: {Item1}}}";
 
         public override int GetHashCode() => Item1.GetHashCode();
 
@@ -171,7 +171,7 @@ namespace Stringes
             this.Item2 = Item2;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2);
 
@@ -202,7 +202,7 @@ namespace Stringes
             this.Item3 = Item3;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3);
 
@@ -236,7 +236,7 @@ namespace Stringes
             this.Item4 = Item4;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4);
 
@@ -273,7 +273,7 @@ namespace Stringes
             this.Item5 = Item5;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5);
 
@@ -313,7 +313,7 @@ namespace Stringes
             this.Item6 = Item6;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}, Item6: \{Item6}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6);
 
@@ -356,7 +356,7 @@ namespace Stringes
             this.Item7 = Item7;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}, Item6: \{Item6}, Item7: \{Item7}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6, Item7);
 
@@ -402,7 +402,7 @@ namespace Stringes
             this.Item8 = Item8;
         }
 
-        public override string ToString() => "{Item1: \{Item1}, Item2: \{Item2}, Item3: \{Item3}, Item4: \{Item4}, Item5: \{Item5}, Item6: \{Item6}, Item7: \{Item7}, Item8: \{Item8}}";
+        public override string ToString() => $"{{Item1: {Item1}, Item2: {Item2}, Item3: {Item3}, Item4: {Item4}, Item5: {Item5}, Item6: {Item6}, Item7: {Item7}, Item8: {Item8}}}";
 
         public override int GetHashCode() => HashOf(Item1, Item2, Item3, Item4, Item5, Item6, Item7, Item8);
 

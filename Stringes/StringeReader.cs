@@ -253,7 +253,7 @@ namespace Stringes
             {
                 if (rules.EndToken != null && !rules.IgnoreRules.Contains(rules.EndToken.Item2))
                 {
-                    return new Token<T>(rules.EndToken.Item2, _stringe.Substringe(_pos, 0));
+                    return new Token<T>(rules.EndToken.Item2, rules.EndToken.Item1);
                 }
 
                 throw new InvalidOperationException("Unexpected end of input.");
