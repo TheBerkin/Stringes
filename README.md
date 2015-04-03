@@ -45,6 +45,26 @@ Line 1: Hello
 Line 2: World!
 ```
 
+###Ranges
+
+In some instances, such as when working with tokens, retrieving a range of text between two elements in the parent string can yield extremely useful data. This is made possible in Stringes through two methods: `Stringe.Between` and `Stringe.Range`.
+
+The `Stringe.Range` method returns a substringe whose endpoints comprise of the two `Stringe` objects passed to it:
+```
+var parent = new Stringe("The quick brown fox jumps over the lazy dog");
+var a = parent.Substringe(0, 3); // "The"
+var b = parent.Substringe(16, 3); // "fox"
+Console.WriteLine(Stringe.Range(a, b)); // "The quick brown fox"
+```
+
+The `Stringe.Between` method returns a substringe comprised of all the text between the two `Stringe` objects passed to it:
+```
+var parent = new Stringe("Here are (some words) in parentheses.");
+var a = parent.Substringe(9, 1); // "("
+var b = parent.Substringe(20, 1); // ")"
+Console.WriteLine(Stringe.Between(a, b)); // "some words"
+```
+
 ##Lexers
 
 The Stringes library contains all the tools you need to write a lexer. The lexer-specific classes are:
