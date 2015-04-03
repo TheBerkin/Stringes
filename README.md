@@ -78,3 +78,6 @@ To install Stringes without cloning the repository, you can use the NuGet packag
 ```
 PM> Install-Package Stringes
 ```
+
+##Compiling
+Stringes uses C# 6 syntax. To compile the source, you will need Visual Studio 2015 CTP 6.
