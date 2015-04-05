@@ -1,5 +1,6 @@
 Stringes
 ========
+[![Build status](https://ci.appveyor.com/api/projects/status/qh53m0lmv6gpmxg9?svg=true)](https://ci.appveyor.com/project/TheBerkin/stringes)
 
 ##What is a *stringe*?!
 
