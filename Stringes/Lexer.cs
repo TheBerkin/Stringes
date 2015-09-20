@@ -235,7 +235,24 @@ namespace Stringes
 
             while (!reader.EndOfStringe)
             {
-                yield return reader.ReadToken(this);
+                yield return reader.ReadToken(this, (stringe, arg2) => new Token<T>(arg2, stringe));
+            }
+        }
+
+        /// <summary>
+        /// Tokenizes the input stringe and enumerates the resulting tokens.
+        /// </summary>
+        /// <param name="input">The input to tokenize.</param>
+        /// <param name="tokenEmitterFunc">The callback that will create the tokens.</param>
+        /// <returns></returns>
+        public IEnumerable<U> Tokenize<U>(Stringe input, Func<Stringe, T, U> tokenEmitterFunc) where U : class
+        {
+            if (tokenEmitterFunc == null) throw new ArgumentNullException(nameof(tokenEmitterFunc));
+            var reader = new StringeReader(input);
+
+            while (!reader.EndOfStringe)
+            {
+                yield return reader.ReadToken(this, tokenEmitterFunc);
             }
         }
 
