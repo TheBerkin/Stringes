@@ -7,7 +7,7 @@ namespace Stringes
 	/// <summary>
 	/// Represents a reader that can read data from a stringe.
 	/// </summary>
-	internal sealed class StringeReader
+	public sealed class StringeReader
 	{
 		private readonly Stringe _stringe;
 		private int _pos;
@@ -337,20 +337,21 @@ namespace Stringes
 		/// Reads the next token from the current position, then advances the position past it.
 		/// </summary>
 		/// <typeparam name="T">The token identifier type to use.</typeparam>
+		/// <typeparam name="U">The token class to use</typeparam>
 		/// <param name="rules">The lexer to use.</param>
+		/// <param name="tokenEmitterFunc">The callback that creates the returned token.</param>
 		/// <returns></returns>
-
-		public Token<T> ReadToken<T>(Lexer<T> rules) where T : struct
+		public U ReadToken<T, U>(Lexer<T> rules, Func<Stringe, T, U> tokenEmitterFunc) where T : struct where U : class
 		{
+			if (tokenEmitterFunc == null) throw new ArgumentNullException(nameof(tokenEmitterFunc));
 			readStart:
 
 			if (EndOfStringe)
 			{
 				if (rules.EndToken != null && !rules.IgnoreRules.Contains(rules.EndToken.Item2))
 				{
-					return new Token<T>(rules.EndToken.Item2, rules.EndToken.Item1);
+					return tokenEmitterFunc(rules.EndToken.Item1, rules.EndToken.Item2);
 				}
-
 				throw new InvalidOperationException("Unexpected end of input.");
 			}
 
@@ -366,7 +367,9 @@ namespace Stringes
 				if (EndOfStringe && captureUndef && u < _pos)
 				{
 					if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-					return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+					return tokenEmitterFunc(
+						rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)),
+						rules.UndefinedCaptureRule.Item2);
 				}
 
 				if (rules.HasPunctuation(PeekChar()))
@@ -378,15 +381,16 @@ namespace Stringes
 						if (captureUndef && u < _pos)
 						{
 							if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-							return new Token<T>(rules.UndefinedCaptureRule.Item2,
-								rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+							return tokenEmitterFunc(
+								rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)),
+								rules.UndefinedCaptureRule.Item2);
 						}
 
 						// Return symbol token
 						var c = _stringe.Substringe(_pos, t.Item1.Length);
 						_pos += t.Item1.Length;
 						if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
-						return new Token<T>(t.Item2, c);
+						return tokenEmitterFunc(c, t.Item2);
 					}
 				}
 
@@ -416,7 +420,9 @@ namespace Stringes
 						if (captureUndef && u < _pos)
 						{
 							if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-							return new Token<T>(rules.UndefinedCaptureRule.Item2, rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+							return tokenEmitterFunc(
+								rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)),
+								rules.UndefinedCaptureRule.Item2);
 						}
 
 						// Return longest match, narrow down to <value> group if available.
@@ -426,11 +432,11 @@ namespace Stringes
 						if (group.Success)
 						{
 							if (rules.IgnoreRules.Contains(id)) goto readStart;
-							return new Token<T>(id, _stringe.Substringe(group.Index, group.Length));
+							return tokenEmitterFunc(_stringe.Substringe(group.Index, group.Length), id);
 						}
 
 						if (rules.IgnoreRules.Contains(id)) goto readStart;
-						return new Token<T>(id, _stringe.Substringe(longestMatch.Index, longestMatch.Length));
+						return tokenEmitterFunc(_stringe.Substringe(longestMatch.Index, longestMatch.Length), id);
 					}
 				}
 
@@ -442,19 +448,9 @@ namespace Stringes
 					{
 						if (fn.Item1(this))
 						{
-							// Return undefined token if present
-							if (captureUndef && u < origPos)
-							{
-								_pos = origPos;
-								if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-								return new Token<T>(rules.UndefinedCaptureRule.Item2,
-									rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, origPos)));
-							}
-
 							if (rules.IgnoreRules.Contains(fn.Item2)) goto readStart;
-							return new Token<T>(fn.Item2, _stringe.Slice(origPos, _pos));
+							return tokenEmitterFunc(_stringe.Slice(origPos, _pos), fn.Item2);
 						}
-
 						// Reset for next function
 						_pos = origPos;
 					}
@@ -469,15 +465,16 @@ namespace Stringes
 						if (captureUndef && u < _pos)
 						{
 							if (rules.IgnoreRules.Contains(rules.UndefinedCaptureRule.Item2)) goto readStart;
-							return new Token<T>(rules.UndefinedCaptureRule.Item2,
-								rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)));
+							return tokenEmitterFunc(
+								rules.UndefinedCaptureRule.Item1(_stringe.Slice(u, _pos)),
+								rules.UndefinedCaptureRule.Item2);
 						}
 
 						// Return symbol token
 						var c = _stringe.Substringe(_pos, t.Item1.Length);
 						_pos += t.Item1.Length;
 						if (rules.IgnoreRules.Contains(t.Item2)) goto readStart;
-						return new Token<T>(t.Item2, c);
+						return tokenEmitterFunc(c, t.Item2);
 					}
 				}
 
